@@ -39,7 +39,7 @@ export function LeetCodeButton({ leetcodeUsername }: LeetCodeButtonProps) {
       href={`https://leetcode.com/${leetcodeUsername}`}
       target="_blank"
       rel="noopener noreferrer"
-      className={`h-full rounded-2xl lg:rounded-3xl border-2 p-2 lg:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-[#0F0F0F]/80 border-purple-500/20 hover:scale-105`}
+      className={`h-full rounded-2xl lg:rounded-3xl border-2 p-2 lg:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-[#0F0F0F]/80 border-purple-500/20 `}
     >
       <div className="flex items-center justify-between w-full px-2">
         <div className="w-8 h-8"></div> {/* Spacer */}

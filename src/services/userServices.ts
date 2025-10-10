@@ -12,15 +12,9 @@ export async function getUser(username: string): Promise<User | null> {
       return null
     }
     console.log("db :", db)
-
     const userRef = doc(db, "users", username)
-    console.log("username :", username)
-    console.log("userRef :", userRef)
 
-    console.log("About to call getDoc...")
     const userSnap = await getDoc(userRef)
-    console.log("userSnap :", userSnap)
-    console.log("userSnap.exists() :", userSnap.exists())
     if (!userSnap.exists()) {
       console.log("No Such Document! from getUser()")
       return null
