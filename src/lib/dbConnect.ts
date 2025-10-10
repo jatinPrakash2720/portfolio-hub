@@ -65,7 +65,7 @@ export async function connectionToFirebase(): Promise<FirebaseServices> {
     console.log("Firebase app : ", app)
     console.log("getApp(): ", getApp())
 
-    const db = getFirestore(app)
+    const db = getFirestore(app, "jatinprakash")
     const auth = getAuth(app)
     const storage = getStorage(app)
 

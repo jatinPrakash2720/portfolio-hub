@@ -35,7 +35,8 @@ export async function getAllProject(
         ({
           id: doc.id,
           ...doc.data(),
-        } as Project)
+      } as Project)
+      
     )
   } catch (error) {
     console.error("Error: Internal Error from getAllProject():", error)

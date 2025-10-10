@@ -1,14 +1,22 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Boldonse&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import 'tailwindcss';
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --primary: #8b5cf6;
+  --primary-foreground: #ffffff;
+  --border: #e5e7eb;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans:
+    'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
@@ -16,11 +24,459 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --card: #1a1a1a;
+    --card-foreground: #ededed;
+    --primary: #8b5cf6;
+    --primary-foreground: #ffffff;
+    --border: #2a2a2a;
   }
 }
 
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --card: #1a1a1a;
+  --card-foreground: #ededed;
+  --primary: #8b5cf6;
+  --primary-foreground: #ffffff;
+  --border: #2a2a2a;
+}
+
+.light {
+  --background: #ffffff;
+  --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --primary: #8b5cf6;
+  --primary-foreground: #ffffff;
+  --border: #e5e7eb;
+}
+
+html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:
+    'Poppins',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    sans-serif !important;
+  height: 100%;
+  overflow: hidden;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Force Inter font on all elements */
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video,
+button,
+input,
+textarea {
+  font-family:
+    'Poppins',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    sans-serif !important;
+}
+
+/* Ensure Inter font is applied to all elements */
+* {
+  font-family:
+    'Poppins',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    sans-serif !important;
+}
+
+/* Font utility classes */
+.font-poppins {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+/* Custom animations for menu button */
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    transform: translateX(-20%) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateX(20%) scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(-20%) scale(1);
+    opacity: 0.6;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+.animate-gradient-shift {
+  animation: gradient-shift 4s ease-in-out infinite;
+}
+
+/* Poppins weight variants */
+.font-poppins-thin {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 100 !important;
+}
+
+.font-poppins-extralight {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 200 !important;
+}
+
+.font-poppins-light {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 300 !important;
+}
+
+.font-poppins-regular {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 400 !important;
+}
+
+.font-poppins-medium {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 500 !important;
+}
+
+.font-poppins-semibold {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 600 !important;
+}
+
+.font-poppins-bold {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 700 !important;
+}
+
+.font-poppins-extrabold {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 800 !important;
+}
+
+.font-poppins-black {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 900 !important;
+}
+
+/* Override any conflicting font styles */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+div,
+button,
+a,
+input,
+textarea {
+  font-family:
+    'Poppins',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    sans-serif !important;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 20s linear infinite;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+/* Force hide scrollbars on iframes */
+iframe {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+iframe::-webkit-scrollbar {
+  display: none;
+}
+
+/* Additional iframe scrollbar hiding */
+.web-preview-iframe {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.web-preview-iframe::-webkit-scrollbar {
+  display: none;
+}
+
+/* 3D Background Animations */
+@keyframes rotate3d {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.1);
+  }
+}
+
+@keyframes gradientShift {
+  0%,
+  100% {
+    background:
+      radial-gradient(
+        circle at 20% 20%,
+        rgba(59, 130, 246, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 80%,
+        rgba(147, 51, 234, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 40% 60%,
+        rgba(236, 72, 153, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 60% 40%,
+        rgba(34, 197, 94, 0.1) 0%,
+        transparent 50%
+      );
+  }
+  25% {
+    background:
+      radial-gradient(
+        circle at 80% 20%,
+        rgba(147, 51, 234, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 20% 80%,
+        rgba(59, 130, 246, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 60% 40%,
+        rgba(34, 197, 94, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 40% 60%,
+        rgba(236, 72, 153, 0.1) 0%,
+        transparent 50%
+      );
+  }
+  50% {
+    background:
+      radial-gradient(
+        circle at 40% 60%,
+        rgba(236, 72, 153, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 60% 40%,
+        rgba(34, 197, 94, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 20% 20%,
+        rgba(59, 130, 246, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 80%,
+        rgba(147, 51, 234, 0.1) 0%,
+        transparent 50%
+      );
+  }
+  75% {
+    background:
+      radial-gradient(
+        circle at 60% 40%,
+        rgba(34, 197, 94, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 40% 60%,
+        rgba(236, 72, 153, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 80%,
+        rgba(147, 51, 234, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 20% 20%,
+        rgba(59, 130, 246, 0.1) 0%,
+        transparent 50%
+      );
+  }
+}
+
+/* Enhanced 3D effects */
+.rotate3d {
+  animation: rotate3d 20s infinite linear;
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.gradient-shift {
+  animation: gradientShift 20s ease-in-out infinite;
+}
+
+/* TextType Animation Styles */
+.text-type {
+  display: inline-block;
+  white-space: pre-wrap;
+}
+
+.text-type__cursor {
+  margin-left: 0.25rem;
+  display: inline-block;
+  opacity: 1;
+}
+
+.text-type__cursor--hidden {
+  display: none;
 }

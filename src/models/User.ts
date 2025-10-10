@@ -26,10 +26,12 @@ export const UserSchema = z.object({
   portfolioDomain: z.string().describe("Domain of the User."),
   socialLinks: z.object({
     githubProfile: z.string().describe("Github Profile link of the User."),
-    linkedinProfile: z.string().describe("Linked Profile link of the User."),
+    linkedInProfile: z.string().describe("Linked Profile link of the User."),
     leetcodeProfile: z.string().describe("Leetcode Profile link of the User."),
   }),
-  projects: z.array(ProjectSchema),
+
+  projects: z.array(z.string().describe("Project Id of the User.")).describe("Projects Id of the User."),
+  techStack: z.array(z.string()).describe("Tech Stack of the User."),
 })
 
 export type User = z.infer<typeof UserSchema>
