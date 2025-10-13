@@ -3,10 +3,9 @@
 import { lazy, Suspense } from "react"
 
 // Lazy load the TypeText component
-const PixelBlast = lazy(() => import("../ui/PixelBlast"))
+const PixelBlast = lazy(() => import("../../ui/PixelBlast"))
 
 export default function PixelBlastClient() {
-
   return (
     <Suspense fallback={null}>
       <PixelBlast

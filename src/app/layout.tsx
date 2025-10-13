@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
+import LoadingBar from "@/components/ui/loading-bar"
+import PageTransition from "@/components/ui/page-transition"
+import { UserDataProvider } from "@/contexts/UserDataContext"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,11 +24,21 @@ export const metadata: Metadata = {
   description: "Interactive portfolio with animated transitions and modern UI",
   keywords: ["portfolio", "developer", "react", "nextjs", "typescript"],
   authors: [{ name: "Jatin Prakash" }],
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Portfolio - Jatin Prakash",
+  },
 }
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#7c3aed" },
+    { media: "(prefers-color-scheme: light)", color: "#7c3aed" },
+  ],
 }
 
 export default function RootLayout({
@@ -47,7 +60,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <UserDataProvider>
+          <LoadingBar />
+          <PageTransition>{children}</PageTransition>
+        </UserDataProvider>
       </body>
     </html>
   )

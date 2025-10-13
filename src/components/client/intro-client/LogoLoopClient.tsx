@@ -2,7 +2,7 @@
 
 import { lazy, Suspense } from "react"
 // Lazy load the LogoLoop component
-const LogoLoop = lazy(() => import("../ui/LogoLoop"))
+const LogoLoop = lazy(() => import("../../ui/LogoLoop"))
 
 export default function LogoLoopClient({ techStack }: { techStack: string[] }) {
   // Default logos for the background animation

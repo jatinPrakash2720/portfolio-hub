@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Boldonse&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-@import 'tailwindcss';
+@import url("https://fonts.googleapis.com/css2?family=Boldonse&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import "tailwindcss";
 
 :root {
   --background: #ffffff;
@@ -14,9 +14,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans:
-    'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, sans-serif;
+  --font-sans: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
@@ -56,16 +55,8 @@ html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family:
-    'Poppins',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    sans-serif !important;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, sans-serif !important;
   height: 100%;
   overflow: hidden;
   font-weight: 400;
@@ -157,35 +148,19 @@ video,
 button,
 input,
 textarea {
-  font-family:
-    'Poppins',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    sans-serif !important;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, sans-serif !important;
 }
 
 /* Ensure Inter font is applied to all elements */
 * {
-  font-family:
-    'Poppins',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    sans-serif !important;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, sans-serif !important;
 }
 
 /* Font utility classes */
 .font-poppins {
-  font-family: 'Poppins', sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
 }
 
 /* Custom animations for menu button */
@@ -224,47 +199,47 @@ textarea {
 
 /* Poppins weight variants */
 .font-poppins-thin {
-  font-family: 'Poppins', sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
   font-weight: 100 !important;
 }
 
 .font-poppins-extralight {
-  font-family: 'Poppins', sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
   font-weight: 200 !important;
 }
 
 .font-poppins-light {
-  font-family: 'Poppins', sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
   font-weight: 300 !important;
 }
 
 .font-poppins-regular {
-  font-family: 'Poppins', sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
   font-weight: 400 !important;
 }
 
 .font-poppins-medium {
-  font-family: 'Poppins', sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
   font-weight: 500 !important;
 }
 
 .font-poppins-semibold {
-  font-family: 'Poppins', sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
   font-weight: 600 !important;
 }
 
 .font-poppins-bold {
-  font-family: 'Poppins', sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
   font-weight: 700 !important;
 }
 
 .font-poppins-extrabold {
-  font-family: 'Poppins', sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
   font-weight: 800 !important;
 }
 
 .font-poppins-black {
-  font-family: 'Poppins', sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
   font-weight: 900 !important;
 }
 
@@ -282,16 +257,8 @@ button,
 a,
 input,
 textarea {
-  font-family:
-    'Poppins',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    sans-serif !important;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, sans-serif !important;
 }
 
 @keyframes scroll {
@@ -359,8 +326,7 @@ iframe::-webkit-scrollbar {
 @keyframes gradientShift {
   0%,
   100% {
-    background:
-      radial-gradient(
+    background: radial-gradient(
         circle at 20% 20%,
         rgba(59, 130, 246, 0.1) 0%,
         transparent 50%
@@ -382,8 +348,7 @@ iframe::-webkit-scrollbar {
       );
   }
   25% {
-    background:
-      radial-gradient(
+    background: radial-gradient(
         circle at 80% 20%,
         rgba(147, 51, 234, 0.1) 0%,
         transparent 50%
@@ -405,8 +370,7 @@ iframe::-webkit-scrollbar {
       );
   }
   50% {
-    background:
-      radial-gradient(
+    background: radial-gradient(
         circle at 40% 60%,
         rgba(236, 72, 153, 0.1) 0%,
         transparent 50%
@@ -428,8 +392,7 @@ iframe::-webkit-scrollbar {
       );
   }
   75% {
-    background:
-      radial-gradient(
+    background: radial-gradient(
         circle at 60% 40%,
         rgba(34, 197, 94, 0.1) 0%,
         transparent 50%
@@ -479,4 +442,65 @@ iframe::-webkit-scrollbar {
 
 .text-type__cursor--hidden {
   display: none;
+}
+
+/* Smooth page transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: scale(0.95) translateY(10px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: scale(1.05) translateY(-10px);
+  transition: opacity 200ms ease-in, transform 200ms ease-in;
+}
+
+/* Smooth scrolling for better UX */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent layout shift during transitions */
+* {
+  box-sizing: border-box;
+}
+
+/* Staggered animation delays for dots */
+.animation-delay-0 {
+  animation-delay: 0s;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.15s;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.3s;
+}
+
+/* Faster pulse animation for dots */
+@keyframes pulse-fast {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.animate-pulse-fast {
+  animation: pulse-fast 0.8s ease-in-out infinite;
 }

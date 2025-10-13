@@ -4,6 +4,7 @@ import { doc, getDoc } from "firebase/firestore"
 
 export async function getUser(username: string): Promise<User | null> {
   try {
+    console.log("Fetching user data from Firebase for:", username)
     const { db } = await connectionToFirebase()
     if (!db) {
       console.error(
@@ -11,7 +12,6 @@ export async function getUser(username: string): Promise<User | null> {
       )
       return null
     }
-    console.log("db :", db)
     const userRef = doc(db, "users", username)
 
     const userSnap = await getDoc(userRef)
@@ -20,7 +20,10 @@ export async function getUser(username: string): Promise<User | null> {
       return null
     }
 
-    return userSnap.data() as User
+    const userData = userSnap.data() as User
+    console.log("User data fetched from Firebase:", userData)
+
+    return userData
   } catch (error) {
     console.error("Error: Internal Error from getUser():", error)
     return null

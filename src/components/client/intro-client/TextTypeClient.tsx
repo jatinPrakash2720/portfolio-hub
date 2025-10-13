@@ -3,14 +3,13 @@
 import { lazy, Suspense } from "react"
 
 // Lazy load the TypeText component
-const TextType = lazy(() => import("../ui/TypeText"))
+const TextType = lazy(() => import("../../ui/TypeText"))
 
 interface TextTypeClientProps {
   text: string
 }
 
 export default function TextTypeClient({ text }: TextTypeClientProps) {
-
   return (
     <Suspense
       fallback={

@@ -1,5 +1,4 @@
 import { z } from "zod"
-import { ProjectSchema } from "./Project"
 
 export const UserSchema = z.object({
   id: z.string().optional().describe("Firebase Id of the User."),
@@ -32,6 +31,7 @@ export const UserSchema = z.object({
 
   projects: z.array(z.string().describe("Project Id of the User.")).describe("Projects Id of the User."),
   techStack: z.array(z.string()).describe("Tech Stack of the User."),
+  githubRepos: z.array(z.string()).describe("Github Repos of the User."),
 })
 
 export type User = z.infer<typeof UserSchema>

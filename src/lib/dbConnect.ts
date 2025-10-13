@@ -17,6 +17,7 @@ type FirebaseServices = {
 }
 
 const cached: FirebaseServices = {}
+let connectionPromise: Promise<FirebaseServices> | null = null
 
 function getFirebaseConfig(): FirebaseOptions {
   if (process.env.FIREBASE_CONFIG) {
@@ -47,41 +48,42 @@ function getFirebaseConfig(): FirebaseOptions {
 }
 
 export async function connectionToFirebase(): Promise<FirebaseServices> {
+  // Return cached connection if available
   if (cached.db && cached.auth && cached.storage) {
     console.log("Using cached firebase services")
     return cached
   }
-  try {
-    const app = !getApps().length
-      ? initializeApp(getFirebaseConfig())
-      : getApp()
 
-    console.log(
-      "getApps(): ",
-      getApps(),
-      "getApps()'s length: ",
-      getApps().length
-    )
-    console.log("Firebase app : ", app)
-    console.log("getApp(): ", getApp())
-
-    const db = getFirestore(app, "jatinprakash")
-    const auth = getAuth(app)
-    const storage = getStorage(app)
-
-    console.log("Firestore instance: ", db)
-    console.log("Auth instance: ", auth)
-    console.log("Storage instance: ", storage)
-
-    cached.app = app
-    cached.db = db
-    cached.auth = auth
-    cached.storage = storage
-
-    console.log("Firebase connected and services initialized!")
-    return cached
-  } catch (error) {
-    console.error("Failed to connect Firebase: ", error)
-    process.exit(1)
+  // Return existing connection promise if one is in progress
+  if (connectionPromise) {
+    console.log("Firebase connection already in progress, waiting...")
+    return connectionPromise
   }
+
+  // Create new connection promise
+  connectionPromise = (async () => {
+    try {
+      const app = !getApps().length
+        ? initializeApp(getFirebaseConfig())
+        : getApp()
+
+      const db = getFirestore(app, "jatinprakash")
+      const auth = getAuth(app)
+      const storage = getStorage(app)
+
+      cached.app = app
+      cached.db = db
+      cached.auth = auth
+      cached.storage = storage
+
+      console.log("Firebase connected and services initialized!")
+      return cached
+    } catch (error) {
+      console.error("Failed to connect Firebase: ", error)
+      connectionPromise = null // Reset promise on error
+      throw error
+    }
+  })()
+
+  return connectionPromise
 }
