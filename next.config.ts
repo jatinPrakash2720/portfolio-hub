@@ -19,11 +19,15 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: "/resumes/:path*",
+        source: "/:path*.pdf",
         headers: [
           {
             key: "Content-Type",
             value: "application/pdf",
+          },
+          {
+            key: "Content-Disposition",
+            value: "inline",
           },
         ],
       },

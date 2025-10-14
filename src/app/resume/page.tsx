@@ -14,7 +14,7 @@ export default function ResumePage() {
           Click the button below to view or download the resume
         </p>
         <a
-          href="/resumes/Jatin-Prakash.pdf"
+          href="/Jatin-Prakash.pdf"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
