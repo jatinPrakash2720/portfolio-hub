@@ -12,6 +12,11 @@ const DOMAIN_MAP = new Map([
     "jatin.portfolio.jatinbuilds.com",
     { username: "jatin", displayName: "Jatin Prakash" },
   ],
+  [
+    "himanshu.jatinbuilds.com",
+    { username: "himanshu", displayName: "Himanshu" },
+  ],
+  ["shivam.jatinbuilds.com", { username: "shivam", displayName: "Shivam" }],
   // Add more mappings as needed
 ])
 
