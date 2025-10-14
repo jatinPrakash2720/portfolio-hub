@@ -1,4 +1,6 @@
-import PortfolioPage from "@/components/pages/IntroPage"
+"use client"
+
+import PortfolioPage from "@/components/pages/introPage"
 
 // App Router - Portfolio Page Route
 export default function Portfolio() {
