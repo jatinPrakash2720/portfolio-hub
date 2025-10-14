@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { useUserDataContext } from "@/contexts/UserDataContext"
+import Image from "next/image"
 
 export default function Home() {
   const [showName, setShowName] = useState("")
@@ -68,9 +69,11 @@ export default function Home() {
           <div className="flex flex-col lg:flex-row items-center justify-center bg-purple-950/20 rounded-3xl backdrop-blur-3xl transition-all duration-500 ease-in-out p-6 lg:p-8 gap-4 lg:gap-0">
             {/* User Icon and Domain Name */}
             <div className="flex flex-col items-center justify-center">
-              <img
+              <Image
                 src="/images/man.png"
                 alt="User"
+                width={96}
+                height={96}
                 className="w-20 h-20 lg:w-24 lg:h-24 text-white"
               />
               {showName && (

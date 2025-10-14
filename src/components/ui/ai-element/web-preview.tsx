@@ -15,7 +15,6 @@ import {
 } from "../../../components/ui/shared/tooltip"
 import { cn } from "../../../lib/utils"
 import {
-  ChevronDownIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
   RotateCcwIcon,
@@ -202,8 +201,8 @@ export const WebPreviewNavigation = ({
   ...props
 }: WebPreviewNavigationProps) => {
   const { iframeRef } = useWebPreview()
-  const [canGoBack, setCanGoBack] = useState(false)
-  const [canGoForward, setCanGoForward] = useState(false)
+  const [canGoBack] = useState(false)
+  const [canGoForward] = useState(false)
   const [responsiveMode, setResponsiveMode] = useState<
     "mobile" | "tablet" | "desktop"
   >("desktop")

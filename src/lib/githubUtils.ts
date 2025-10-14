@@ -50,7 +50,7 @@ export function extractRepoOwner(url: string): string {
 export function isValidGitHubUrl(url: string): boolean {
   try {
     return /^https?:\/\/github\.com\/[^\/]+\/[^\/]+/.test(url)
-  } catch (error) {
+  } catch {
     return false
   }
 }

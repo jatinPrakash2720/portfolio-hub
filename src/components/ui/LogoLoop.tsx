@@ -42,7 +42,7 @@ const toCssLength = (value: string | number | undefined): string | undefined =>
 const useResizeObserver = (
   callback: () => void,
   elements: React.RefObject<HTMLElement | null>[],
-  dependencies: any[]
+  dependencies: unknown[]
 ) => {
   useEffect(() => {
     if (!window.ResizeObserver) {
@@ -72,46 +72,46 @@ const useResizeObserver = (
   }, dependencies)
 }
 
-const useImageLoader = (
-  seqRef: React.RefObject<HTMLElement | null>,
-  onLoad: () => void,
-  dependencies: any[]
-) => {
-  useEffect(() => {
-    const images = seqRef.current?.querySelectorAll("img") ?? []
+// const useImageLoader = (
+//   seqRef: React.RefObject<HTMLElement | null>,
+//   onLoad: () => void,
+//   dependencies: unknown[]
+// ) => {
+//   useEffect(() => {
+//     const images = seqRef.current?.querySelectorAll("img") ?? []
 
-    if (images.length === 0) {
-      onLoad()
-      return
-    }
+//     if (images.length === 0) {
+//       onLoad()
+//       return
+//     }
 
-    let remainingImages = images.length
-    const handleImageLoad = () => {
-      remainingImages -= 1
-      if (remainingImages === 0) {
-        onLoad()
-      }
-    }
+//     let remainingImages = images.length
+//     const handleImageLoad = () => {
+//       remainingImages -= 1
+//       if (remainingImages === 0) {
+//         onLoad()
+//       }
+//     }
 
-    images.forEach((img: Element) => {
-      const htmlImg = img as HTMLImageElement
-      if (htmlImg.complete) {
-        handleImageLoad()
-      } else {
-        htmlImg.addEventListener("load", handleImageLoad, { once: true })
-        htmlImg.addEventListener("error", handleImageLoad, { once: true })
-      }
-    })
+//     images.forEach((img: Element) => {
+//       const htmlImg = img as HTMLImageElement
+//       if (htmlImg.complete) {
+//         handleImageLoad()
+//       } else {
+//         htmlImg.addEventListener("load", handleImageLoad, { once: true })
+//         htmlImg.addEventListener("error", handleImageLoad, { once: true })
+//       }
+//     })
 
-    return () => {
-      images.forEach((img: Element) => {
-        img.removeEventListener("load", handleImageLoad)
-        img.removeEventListener("error", handleImageLoad)
-      })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, dependencies)
-}
+//     return () => {
+//       images.forEach((img: Element) => {
+//         img.removeEventListener("load", handleImageLoad)
+//         img.removeEventListener("error", handleImageLoad)
+//       })
+//     }
+//     // eslint-disable-next-line react-hooks/exhaustive-deps
+//   }, dependencies)
+// }
 
 const useAnimationLoop = (
   trackRef: React.RefObject<HTMLElement | null>,

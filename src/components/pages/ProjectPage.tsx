@@ -8,7 +8,6 @@ import {
   SkeletonWebPreview,
   SkeletonProjectListClient,
   SkeletonFeaturedProjectsClient,
-  SkeletonNavigationButton,
 } from "../ui/skeleton-loading"
 
 // Lazy load UI components
@@ -418,13 +417,6 @@ export default function ProjectsPage({ githubRepos }: ProjectsPageProps) {
                   <ProjectListClient
                     projectTitles={projectTitles}
                     repoUrls={repoUrls}
-                    hasProjects={projects.length > 0}
-                    onProjectSelect={(title, index) => {
-                      const project = projects[index]
-                      if (project?.id) {
-                        handleProjectSelect(project.id)
-                      }
-                    }}
                   />
                 </Suspense>
               </div>

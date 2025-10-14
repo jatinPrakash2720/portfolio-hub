@@ -3,6 +3,7 @@
 import { useEffect, useState, lazy, Suspense } from "react"
 import { useUserDataContext } from "@/contexts/UserDataContext"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 // Lazy load UI components
 const TextType = lazy(() => import("../ui/TypeText"))
@@ -126,9 +127,11 @@ const getTechLogos = (techStack: string[]) => {
       }
       return {
         node: (
-          <img
+          <Image
             src={logo.src}
             alt={logo.alt}
+            width={32}
+            height={32}
             className="w-8 h-8 brightness-0 invert"
           />
         ),
@@ -154,7 +157,6 @@ const LinkedInButton = lazy(() =>
   }))
 )
 import {
-  SkeletonBox,
   SkeletonText,
   SkeletonProfile,
   SkeletonTechLogos,
@@ -334,10 +336,11 @@ export default function PortfolioPage() {
             {loading ? (
               <SkeletonProfile />
             ) : (
-              <img
-                src={userData?.profilePictureUrl}
-                alt={userData?.fullName}
-                className="w-full h-full object-cover pointer-events-none relative z-0"
+              <Image
+                src={userData?.profilePictureUrl || "/images/man.png"}
+                alt={userData?.fullName || "Profile"}
+                fill
+                className="object-cover pointer-events-none relative z-0"
               />
             )}
           </div>

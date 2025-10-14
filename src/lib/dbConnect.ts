@@ -24,7 +24,7 @@ function getFirebaseConfig(): FirebaseOptions {
     try {
       const config = JSON.parse(process.env.FIREBASE_CONFIG)
       if (config && config.apiKey) return config
-    } catch (error) {
+    } catch {
       console.warn("Warning: Failed to parse NEXT_PUBLIC_FIREBASE_CONFIG.")
     }
   }

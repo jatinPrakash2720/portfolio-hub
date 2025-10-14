@@ -7,14 +7,14 @@ interface ContactFormData {
   message: string
 }
 
-interface ContactFormState {
-  formData: ContactFormData
-  isSubmitting: boolean
-  submitStatus: {
-    type: "success" | "error" | null
-    message: string
-  }
-}
+// interface ContactFormState {
+//   formData: ContactFormData
+//   isSubmitting: boolean
+//   submitStatus: {
+//     type: "success" | "error" | null
+//     message: string
+//   }
+// }
 
 export function useContactForm() {
   const [formData, setFormData] = useState<ContactFormData>({

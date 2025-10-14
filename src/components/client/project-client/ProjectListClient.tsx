@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, lazy, Suspense } from "react"
+import { lazy, Suspense } from "react"
 
 // Lazy load UI components
 const AnimatedList = lazy(() => import("../../ui/ai-element/animate-list"))
@@ -8,15 +8,11 @@ const AnimatedList = lazy(() => import("../../ui/ai-element/animate-list"))
 type ProjectListClientProps = {
   projectTitles: string[]
   repoUrls: string[]
-  onProjectSelect: (projectId: string, index: number) => void
-  hasProjects: boolean
 }
 
 export default function ProjectListClient({
   projectTitles,
   repoUrls,
-  onProjectSelect,
-  hasProjects,
 }: ProjectListClientProps) {
   const handleSelect = (name: string, index: number) => {
     // Always open GitHub repo when clicked, since we're showing GitHub repos in the list
