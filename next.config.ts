@@ -16,6 +16,19 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: "/resumes/:path*",
+        headers: [
+          {
+            key: "Content-Type",
+            value: "application/pdf",
+          },
+        ],
+      },
+    ]
+  },
 }
 
 export default nextConfig
