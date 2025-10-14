@@ -170,6 +170,7 @@ export default function PortfolioPage() {
     error,
     projectsLoading,
     contactLoading,
+    username,
     prefetchUserData,
     setProjectsLoading,
     setContactLoading,
@@ -183,9 +184,10 @@ export default function PortfolioPage() {
   useEffect(() => {
     if (!userData && !loading && !error) {
       console.log("Data not prefetched, fetching now")
-      prefetchUserData("jatin")
+      const usernameToUse = username || "jatin" // fallback to jatin if no username
+      prefetchUserData(usernameToUse)
     }
-  }, [userData, loading, error, prefetchUserData])
+  }, [userData, loading, error, prefetchUserData, username])
 
   // Clear intro loading state when component mounts
   useEffect(() => {

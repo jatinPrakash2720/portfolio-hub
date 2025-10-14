@@ -10,10 +10,12 @@ interface UserDataContextType {
   projectsLoading: boolean
   contactLoading: boolean
   introLoading: boolean
+  username: string | null
   prefetchUserData: (username: string) => Promise<void>
   setProjectsLoading: (loading: boolean) => void
   setContactLoading: (loading: boolean) => void
   setIntroLoading: (loading: boolean) => void
+  setUsername: (username: string | null) => void
 }
 
 const UserDataContext = createContext<UserDataContextType | undefined>(
@@ -27,6 +29,7 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
   const [projectsLoading, setProjectsLoading] = useState(false)
   const [contactLoading, setContactLoading] = useState(false)
   const [introLoading, setIntroLoading] = useState(false)
+  const [username, setUsername] = useState<string | null>(null)
 
   const prefetchUserData = async (username: string) => {
     if (userData || loading) {
@@ -66,10 +69,12 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
         projectsLoading,
         contactLoading,
         introLoading,
+        username,
         prefetchUserData,
         setProjectsLoading,
         setContactLoading,
         setIntroLoading,
+        setUsername,
       }}
     >
       {children}

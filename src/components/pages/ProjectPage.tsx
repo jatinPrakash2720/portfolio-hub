@@ -61,7 +61,7 @@ interface User {
 }
 
 export default function ProjectsPage({ githubRepos }: ProjectsPageProps) {
-  const { setProjectsLoading, setIntroLoading, setContactLoading } =
+  const { setProjectsLoading, setIntroLoading, setContactLoading, username } =
     useUserDataContext()
   const router = useRouter()
   const [projects, setProjects] = useState<Project[]>([])
@@ -81,7 +81,8 @@ export default function ProjectsPage({ githubRepos }: ProjectsPageProps) {
         setError(null)
 
         // Fetch projects from API
-        const projectsResponse = await fetch("/api/projects/jatin")
+        const usernameToUse = username || "jatin" // fallback to jatin if no username
+        const projectsResponse = await fetch(`/api/projects/${usernameToUse}`)
         console.log("Projects response status:", projectsResponse.status)
         console.log(
           "Projects response headers:",
@@ -141,7 +142,7 @@ export default function ProjectsPage({ githubRepos }: ProjectsPageProps) {
     }
 
     fetchData()
-  }, [githubRepos, setProjectsLoading])
+  }, [githubRepos, setProjectsLoading, username])
 
   // Set initial selected project
   useEffect(() => {

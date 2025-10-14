@@ -19,15 +19,15 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Portfolio - Jatin Prakash",
+  title: "Portfolio - Dynamic Portfolio",
   description: "Interactive portfolio with animated transitions and modern UI",
   keywords: ["portfolio", "developer", "react", "nextjs", "typescript"],
-  authors: [{ name: "Jatin Prakash" }],
+  authors: [{ name: "Portfolio Builder" }],
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Portfolio - Jatin Prakash",
+    title: "Portfolio - Dynamic Portfolio",
   },
 }
 

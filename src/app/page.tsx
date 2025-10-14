@@ -3,6 +3,8 @@
 import { useEffect, useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { useUserDataContext } from "@/contexts/UserDataContext"
+import { useUsername } from "@/hooks/useUsername"
+import SubdomainTest from "@/components/SubdomainTest"
 import Image from "next/image"
 
 export default function Home() {
@@ -13,7 +15,9 @@ export default function Home() {
     prefetchUserData,
     loading: dataLoading,
     userData,
+    setUsername,
   } = useUserDataContext()
+  const extractedUsername = useUsername()
   const router = useRouter()
 
   // Memoize domain check to prevent unnecessary re-renders
@@ -27,15 +31,21 @@ export default function Home() {
     return { host: "", href: "" }
   }, [])
 
-  // Prefetch user data and prepare UI
+  // Set username from subdomain and prefetch user data
   useEffect(() => {
-    setShowName(domainInfo.host)
+    if (extractedUsername) {
+      setUsername(extractedUsername)
+      setShowName(extractedUsername)
+    } else {
+      setShowName(domainInfo.host)
+    }
     setShowButton(true)
 
     // Start prefetching user data immediately
-    console.log("Starting data prefetch on root page")
-    prefetchUserData("jatin")
-  }, [domainInfo.host, prefetchUserData])
+    const usernameToUse = extractedUsername || "jatin" // fallback to jatin if no subdomain
+    console.log("Starting data prefetch on root page for:", usernameToUse)
+    prefetchUserData(usernameToUse)
+  }, [domainInfo.host, extractedUsername, prefetchUserData, setUsername])
 
   // Navigate when data is ready
   useEffect(() => {
@@ -51,6 +61,7 @@ export default function Home() {
 
   return (
     <div className="h-screen w-full bg-purple-950/10 flex flex-col items-center justify-center overflow-hidden">
+      <SubdomainTest />
       {showWelcome ? (
         // Welcome Loading Screen
         <div className="flex flex-col items-center justify-center">

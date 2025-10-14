@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, memo } from "react"
+import Image from "next/image"
 import "./LogoLoop.css"
 
 interface LogoItem {
@@ -289,17 +290,18 @@ export const LogoLoop = memo<LogoLoopProps>(
           {item.node}
         </span>
       ) : (
-        <img
-          src={item.src}
-          srcSet={item.srcSet}
-          sizes={item.sizes}
-          width={item.width}
-          height={item.height}
+        <Image
+          src={item.src!}
+          width={item.width!}
+          height={item.height!}
           alt={item.alt ?? ""}
           title={item.title}
           loading="lazy"
-          decoding="async"
           draggable={false}
+          style={{
+            width: "auto",
+            height: "auto",
+          }}
         />
       )
 
