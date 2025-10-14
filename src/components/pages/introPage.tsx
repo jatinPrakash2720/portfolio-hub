@@ -459,7 +459,24 @@ export default function PortfolioPage() {
             <button
               onClick={() => {
                 const pdfUrl = `${window.location.origin}/Jatin-Prakash.pdf`;
-                window.open(pdfUrl, "_blank");
+                console.log('PDF URL:', pdfUrl);
+                console.log('Current origin:', window.location.origin);
+                
+                // Test if file exists first
+                fetch(pdfUrl, { method: 'HEAD' })
+                  .then(response => {
+                    console.log('PDF response status:', response.status);
+                    if (response.ok) {
+                      window.open(pdfUrl, "_blank");
+                    } else {
+                      console.error('PDF not found:', response.status);
+                      alert('PDF file not found. Please check the file path.');
+                    }
+                  })
+                  .catch(error => {
+                    console.error('Error checking PDF:', error);
+                    alert('Error loading PDF file.');
+                  });
               }}
               className="w-full h-full rounded-2xl lg:rounded-3xl border-2 p-0.5 lg:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-purple-700/15 border-purple-600/40 hover:bg-purple-600/20"
             >
