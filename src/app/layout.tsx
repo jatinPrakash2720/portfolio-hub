@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import PageTransition from "@/components/ui/page-transition"
 import { UserDataProvider } from "@/contexts/UserDataContext"
+import { Analytics } from "@vercel/analytics/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -63,7 +64,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <UserDataProvider>
-          <PageTransition>{children}</PageTransition>
+          <PageTransition>
+            {children}
+            <Analytics />
+          </PageTransition>
         </UserDataProvider>
       </body>
     </html>
