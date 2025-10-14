@@ -457,7 +457,10 @@ export default function PortfolioPage() {
           {/* PDF Button - Mobile: 2x1, Tablet: 1x1, Desktop: 1x1 */}
           <div className="col-span-1 row-span-1 col-start-1 row-start-4 md:col-span-1 md:row-span-2 md:row-start-2 md:col-start-6  lg:col-span-1 lg:row-span-2 lg:col-start-6 lg:row-start-4 z-10">
             <button
-              onClick={() => window.open("/Jatin-Prakash.pdf", "_blank")}
+              onClick={() => {
+                const pdfUrl = `${window.location.origin}/Jatin-Prakash.pdf`;
+                window.open(pdfUrl, "_blank");
+              }}
               className="w-full h-full rounded-2xl lg:rounded-3xl border-2 p-0.5 lg:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-purple-700/15 border-purple-600/40 hover:bg-purple-600/20"
             >
               <div className="flex flex-col items-center justify-center">
