@@ -47,7 +47,13 @@ function extractSubdomain(host: string): string | null {
     }
   }
 
-  // For direct portfolio.jatinbuilds.com access, return null
+  // For direct portfolio.jatinbuilds.com access, extract jatin from jatinbuilds
+  if (parts.length === 2 && parts[0] === "portfolio") {
+    // Extract username from domain like jatinbuilds.com -> jatin
+    const domainPart = parts[1].split(".")[0] // jatinbuilds
+    return domainPart.replace("builds", "") // jatin
+  }
+
   return null
 }
 
