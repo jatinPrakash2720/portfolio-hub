@@ -131,18 +131,19 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
   }, [selectedIndex, keyboardNav])
 
   return (
-    <div className={`relative w-full ${className}`}>
+    <div className={`relative w-full h-full ${className}`}>
       <div
         ref={listRef}
-        className={`h-full overflow-y-auto p-2 md:p-3 lg:p-4 ${
+        className={`h-full w-full overflow-y-scroll p-2 md:p-3 lg:p-4 ${
           displayScrollbar
-            ? "[&::-webkit-scrollbar]:w-[8px] [&::-webkit-scrollbar-track]:bg-black/20 [&::-webkit-scrollbar-thumb]:bg-purple-500/50 [&::-webkit-scrollbar-thumb]:rounded-[4px] [&::-webkit-scrollbar-thumb]:hover:bg-purple-500/70"
-            : "scrollbar-hide"
+            ? "[&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar-track]:bg-black/20 [&::-webkit-scrollbar-thumb]:bg-purple-500/50 [&::-webkit-scrollbar-thumb]:rounded-[4px] [&::-webkit-scrollbar-thumb]:hover:bg-purple-500/70"
+            : "[&::-webkit-scrollbar]:hidden"
         }`}
         onScroll={handleScroll}
         style={{
           scrollbarWidth: displayScrollbar ? "thin" : "none",
           scrollbarColor: "rgba(139, 92, 246, 0.5) rgba(0, 0, 0, 0.2)",
+          WebkitOverflowScrolling: "touch",
         }}
       >
         {items.map((item, index) => (
@@ -159,13 +160,14 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
             }}
           >
             <div
-              className={`bg-black/60 backdrop-blur-sm border border-purple-500/20 rounded-lg transition-all duration-200 flex items-center justify-center lg:min-h-[60px] lg:py-3 ${
+              className={`bg-black/60 backdrop-blur-sm border border-purple-500/20 rounded-lg transition-all duration-200 flex items-center justify-center py-2 md:py-3 lg:py-4 ${
                 selectedIndex === index
                   ? "bg-purple-600/20 border-purple-500/50 scale-[1.02]"
                   : "hover:bg-black/80"
               } ${itemClassName}`}
               style={{
-                minHeight: "40px", // Fixed minimum height for mobile/tablet
+                minHeight: "44px", // Mobile
+                height: "auto",
               }}
             >
               <p className="text-white m-0 font-medium text-xs md:text-sm lg:text-base text-center capitalize">

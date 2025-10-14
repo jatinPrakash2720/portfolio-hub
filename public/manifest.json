@@ -4,8 +4,8 @@
   "description": "Interactive portfolio with animated transitions and modern UI",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#7c3aed",
-  "theme_color": "#7c3aed",
+  "background_color": "#1a0b2e",
+  "theme_color": "#2d1b69",
   "orientation": "portrait-primary",
   "icons": [
     {

@@ -29,8 +29,8 @@ export default function ProjectListClient({
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="p-2 md:p-3 border-b border-purple-500/20">
+    <div className="h-full flex flex-col w-full">
+      <div className="p-2 md:p-3 border-b border-purple-500/20 flex-shrink-0">
         <div className="flex items-center justify-center">
           <h3 className="text-sm md:text-base font-bold text-center">
             Major Github Repositories
@@ -40,20 +40,18 @@ export default function ProjectListClient({
           </h3>
         </div>
       </div>
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full overflow-y-auto scrollbar-hide">
-          <Suspense
-            fallback={
-              <div className="flex items-center justify-center h-full">
-                <div className="animate-pulse text-purple-400">
-                  Loading projects...
-                </div>
+      <div className="flex-1 min-h-0">
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center h-full">
+              <div className="animate-pulse text-purple-400">
+                Loading projects...
               </div>
-            }
-          >
-            <AnimatedList items={projectTitles} onItemSelect={handleSelect} />
-          </Suspense>
-        </div>
+            </div>
+          }
+        >
+          <AnimatedList items={projectTitles} onItemSelect={handleSelect} />
+        </Suspense>
       </div>
     </div>
   )

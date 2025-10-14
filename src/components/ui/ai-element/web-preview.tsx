@@ -115,7 +115,7 @@ export const WebPreview = ({
     <WebPreviewContext.Provider value={contextValue}>
       <div
         className={cn(
-          "flex size-full flex-col rounded-lg bg-black/80 backdrop-blur-sm border-purple-500/20 overflow-hidden relative",
+          "flex size-full flex-col rounded-lg bg-black/80 backdrop-blur-sm border-purple-500/20 overflow-hidden relative w-full",
           className
         )}
         style={{
@@ -521,7 +521,7 @@ export const WebPreviewBody = ({
   const { url, iframeRef } = useWebPreview()
 
   return (
-    <div className="flex-1 overflow-hidden">
+    <div className="flex-1 overflow-hidden w-full">
       <iframe
         ref={iframeRef}
         className={cn(

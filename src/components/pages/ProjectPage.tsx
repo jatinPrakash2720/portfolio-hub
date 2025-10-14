@@ -222,7 +222,7 @@ export default function ProjectsPage({ githubRepos }: ProjectsPageProps) {
 
   if (loading) {
     return (
-      <div className="h-screen flex relative transition-colors duration-300 bg-black text-white">
+      <div className="h-screen flex relative transition-colors duration-300 bg-black text-white overflow-hidden">
         {/* PixelBlast Background */}
         <div className="absolute inset-0 z-0 pointer-events-none">
           <Suspense fallback={null}>
@@ -246,15 +246,14 @@ export default function ProjectsPage({ githubRepos }: ProjectsPageProps) {
         <div className="absolute inset-0 z-0 pointer-events-none transition-colors duration-300 bg-purple-900/10" />
 
         <main
-          className="relative z-10 w-screen overflow-hidden p-1"
-          style={{ height: "100dvh" }}
+          className="relative z-10 w-full overflow-hidden p-1"
+          style={{ height: "100dvh", maxWidth: "100%" }}
         >
           {/* Responsive Grid Layout */}
           <div
-            className="relative grid grid-cols-6 grid-rows-7 md:grid-cols-8 md:grid-rows-5 lg:grid-rows-6 md:p-6 lg:p-10"
+            className="relative grid grid-cols-6 grid-rows-7 md:grid-cols-8 md:grid-rows-5 lg:grid-rows-6 p-0.5 sm:p-1 md:p-2 lg:p-4"
             style={{
-              gap: "10px",
-              padding: "6px",
+              gap: "4px",
               width: "100%",
               height: "100%",
               boxSizing: "border-box",
@@ -286,7 +285,7 @@ export default function ProjectsPage({ githubRepos }: ProjectsPageProps) {
     return (
       <div className="h-screen flex items-center justify-center bg-black text-white">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4 text-red-400">Error</h2>
+          <h2 className="text-2xl font-bold mb-4 text-white">Error</h2>
           <p className="text-white/60">{error}</p>
         </div>
       </div>
@@ -298,7 +297,9 @@ export default function ProjectsPage({ githubRepos }: ProjectsPageProps) {
     return (
       <div className="h-screen flex items-center justify-center bg-black text-white">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">No Projects Found</h2>
+          <h2 className="text-2xl font-bold mb-4 text-white">
+            No Projects Found
+          </h2>
           <p className="text-white/60">Add some projects to get started!</p>
         </div>
       </div>
@@ -335,7 +336,7 @@ export default function ProjectsPage({ githubRepos }: ProjectsPageProps) {
           animation: smoothFadeIn 0.6s ease-out;
         }
       `}</style>
-      <div className="h-screen flex relative transition-colors duration-300 bg-black text-white">
+      <div className="h-screen flex relative transition-colors duration-300 bg-black text-white overflow-hidden">
         {/* PixelBlast Background */}
         <div className="absolute inset-0 z-0 pointer-events-none">
           <Suspense fallback={null}>
@@ -360,21 +361,19 @@ export default function ProjectsPage({ githubRepos }: ProjectsPageProps) {
 
         <main
           className="relative z-10 w-screen overflow-hidden p-1"
-          style={{ height: "100dvh" }}
+          style={{ height: "100dvh", maxWidth: "100%" }}
         >
           {/* Responsive Grid Layout */}
           <div
-            className="relative grid grid-cols-6 grid-rows-7 md:grid-cols-8 md:grid-rows-5 lg:grid-rows-6 md:p-6 lg:p-10"
+            className="relative grid grid-cols-6 grid-rows-7 md:grid-cols-8 md:grid-rows-5 lg:grid-rows-6 p-2 h-full"
             style={{
               gap: "10px",
-              padding: "6px",
               width: "100%",
-              height: "100%",
               boxSizing: "border-box",
             }}
           >
             {/* Web Preview Section */}
-            <div className="col-span-6 row-span-4 md:col-span-6 md:row-span-5 lg:row-span-5 rounded-2xl md:rounded-3xl overflow-hidden bg-black/80 backdrop-blur-sm border-2 border-purple-500/20 relative transition-all duration-500 ease-in-out">
+            <div className="col-span-6 row-span-4 col-start-1 row-start-1 md:col-span-6 md:row-span-5 lg:row-span-5 rounded-lg md:rounded-xl lg:rounded-2xl overflow-hidden bg-black/80 backdrop-blur-sm border border-purple-500/20 relative transition-all duration-500 ease-in-out">
               {/* Loading Spinner */}
               {!isWebPreviewLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
@@ -410,8 +409,8 @@ export default function ProjectsPage({ githubRepos }: ProjectsPageProps) {
             </div>
 
             {/* Project List Sidebar */}
-            <div className="col-span-4 row-span-3 row-start-5 col-start-1 md:col-span-2 md:row-span-4 md:col-start-7 md:row-start-1 lg:col-span-2 lg:row-span-5 lg:col-start-7 lg:row-start-1 rounded-2xl md:rounded-3xl overflow-hidden bg-black/80 backdrop-blur-sm border-2 border-purple-500/20 transition-all duration-500 ease-in-out">
-              <div className="skeleton-to-content">
+            <div className="col-span-4 row-span-3 row-start-5 col-start-1 md:col-span-2 md:row-span-4 md:col-start-7 md:row-start-1 lg:col-span-2 lg:row-span-5 lg:col-start-7 lg:row-start-1 rounded-lg md:rounded-xl lg:rounded-2xl overflow-hidden bg-black/80 backdrop-blur-sm border border-purple-500/20 transition-all duration-500 ease-in-out">
+              <div className="skeleton-to-content h-full">
                 <Suspense
                   fallback={<SkeletonProjectListClient className="h-full" />}
                 >
@@ -424,7 +423,7 @@ export default function ProjectsPage({ githubRepos }: ProjectsPageProps) {
             </div>
 
             {/* Featured Projects - Desktop Only */}
-            <div className="col-span-6 row-span-1 row-start-6 skeleton-to-content">
+            <div className="lg:col-span-6 lg:row-span-1 lg:row-start-6 skeleton-to-content">
               <Suspense
                 fallback={<SkeletonFeaturedProjectsClient className="h-full" />}
               >
@@ -437,25 +436,25 @@ export default function ProjectsPage({ githubRepos }: ProjectsPageProps) {
             </div>
 
             {/* Profile Button */}
-            <div className="col-span-2 row-span-2 row-start-6 md:col-span-1 md:row-span-1 md:col-start-7 md:row-start-5 lg:col-span-1 lg:row-span-1 lg:col-start-7 lg:row-start-6">
+            <div className="col-span-2 row-span-2 row-start-6 col-start-5 md:col-span-1 md:row-span-1 md:col-start-7 md:row-start-5 lg:col-span-1 lg:row-span-1 lg:col-start-7 lg:row-start-6">
               <button
                 onClick={handleIntroNavigation}
                 disabled={isNavigatingToIntro}
-                className="w-full h-full rounded-2xl md:rounded-2xl border-2 p-0.5 md:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-purple-500/15 border-purple-400/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full h-full rounded-lg md:rounded-xl lg:rounded-2xl border md:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-purple-500/15 border-purple-400/40 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isNavigatingToIntro ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mb-1"></div>
-                    <div className="text-[11px] md:text-xs font-light text-black/80">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mb-1"></div>
+                    <div className="text-[11px] md:text-xs font-light text-white/80">
                       Loading...
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="font-semibold text-[13px] md:text-sm group-hover:text-purple-400 transition-colors duration-300">
+                    <div className="font-semibold text-[13px] md:text-sm text-white group-hover:text-purple-400 transition-colors duration-300">
                       Profile
                     </div>
-                    <div className="text-[11px] md:text-xs font-light text-black/80">
+                    <div className="text-[11px] md:text-xs font-light text-white/80">
                       About Me
                     </div>
                   </>
@@ -468,21 +467,21 @@ export default function ProjectsPage({ githubRepos }: ProjectsPageProps) {
               <button
                 onClick={handleContactNavigation}
                 disabled={isNavigatingToContact}
-                className="w-full h-full rounded-2xl md:rounded-2xl border-2 p-0.5 md:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-purple-600/15 border-purple-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full h-full rounded-lg md:rounded-xl lg:rounded-2xl border  md:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-purple-600/15 border-purple-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isNavigatingToContact ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mb-1"></div>
-                    <div className="text-[11px] md:text-xs font-light text-black/80">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <div className="text-[11px] md:text-xs font-light text-white/80">
                       Loading...
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="font-semibold text-[13px] md:text-sm group-hover:text-purple-400 transition-colors duration-300">
+                    <div className="font-semibold text-[13px] md:text-sm text-white group-hover:text-purple-400 transition-colors duration-300">
                       Contact
                     </div>
-                    <div className="text-[11px] md:text-xs font-light text-black/80">
+                    <div className="text-[11px] md:text-xs font-light text-white/80">
                       Get in Touch
                     </div>
                   </>

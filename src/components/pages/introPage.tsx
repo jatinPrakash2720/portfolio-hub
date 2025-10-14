@@ -291,7 +291,7 @@ export default function PortfolioPage() {
       >
         {/* Mobile: 6x6 Grid, Tablet: 8x5, Desktop: 8x6 Grid */}
         <div
-          className="relative grid grid-cols-6 grid-rows-6 md:grid-cols-8 md:grid-rows-5 lg:grid-rows-6 md:p-6 lg:p-10"
+          className="relative grid grid-cols-6 grid-rows-6 md:grid-cols-8 md:grid-rows-5 lg:grid-rows-6 p-2"
           style={{
             gap: "10px",
             padding: "6px",
@@ -408,8 +408,8 @@ export default function PortfolioPage() {
             >
               {isNavigatingToProjects || projectsLoading ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mb-1"></div>
-                  <div className="text-[11px] lg:text-sm font-light text-black/80">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mb-1"></div>
+                  <div className="text-[11px] lg:text-sm font-light text-white/80">
                     Loading...
                   </div>
                 </>
@@ -418,7 +418,7 @@ export default function PortfolioPage() {
                   <div className="font-semibold text-[13px] lg:text-base group-hover:text-purple-400 transition-colors duration-300">
                     Projects
                   </div>
-                  <div className="text-[11px] lg:text-sm font-light text-black/80">
+                  <div className="text-[11px] lg:text-sm font-light text-white/80">
                     Portfolio
                   </div>
                 </>
@@ -435,8 +435,8 @@ export default function PortfolioPage() {
             >
               {isNavigatingToContact || contactLoading ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mb-1"></div>
-                  <div className="text-[11px] lg:text-sm font-light text-black/80">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mb-1"></div>
+                  <div className="text-[11px] lg:text-sm font-light text-white/80">
                     Loading...
                   </div>
                 </>
@@ -445,7 +445,7 @@ export default function PortfolioPage() {
                   <div className="font-semibold text-[13px] lg:text-base group-hover:text-purple-400 transition-colors duration-300">
                     Contact
                   </div>
-                  <div className="text-[11px] lg:text-sm font-light text-black/80">
+                  <div className="text-[11px] lg:text-sm font-light text-white/80">
                     Get in Touch
                   </div>
                 </>

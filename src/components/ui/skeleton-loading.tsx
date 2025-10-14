@@ -40,73 +40,47 @@ export function SkeletonTechLogos({ className = "" }: SkeletonProps) {
 export function SkeletonWebPreview({ className = "" }: SkeletonProps) {
   return (
     <div
-      className={`bg-white/5 rounded-lg border border-white/10 transition-all duration-700 ease-in-out opacity-100 ${className}`}
+      className={`flex size-full flex-col rounded-lg bg-black/80 backdrop-blur-sm border-purple-500/20 overflow-hidden relative w-full ${className}`}
       style={{
-        animation: "fadeInOut 2s ease-in-out infinite",
+        border: "1px solid rgba(147, 51, 234, 0.2)",
       }}
     >
       {/* Browser header */}
-      <div className="h-8 bg-white/10 rounded-t-lg flex items-center px-3 gap-2 transition-all duration-500 ease-in-out">
-        <div className="w-3 h-3 bg-white/20 rounded-full animate-pulse" />
+      <div className="flex items-center gap-1 p-2 bg-black/50 rounded-t-lg border-b border-purple-500/20">
+        <div className="flex items-center gap-1 mr-2">
+          <div className="h-4 w-4 bg-white/10 rounded-full animate-pulse" />
+          <div
+            className="h-4 w-4 bg-white/10 rounded-full animate-pulse"
+            style={{ animationDelay: "0.1s" }}
+          />
+          <div
+            className="h-4 w-4 bg-white/10 rounded-full animate-pulse"
+            style={{ animationDelay: "0.2s" }}
+          />
+        </div>
         <div
-          className="w-3 h-3 bg-white/20 rounded-full animate-pulse"
-          style={{ animationDelay: "0.1s" }}
-        />
-        <div
-          className="w-3 h-3 bg-white/20 rounded-full animate-pulse"
-          style={{ animationDelay: "0.2s" }}
-        />
-        <div
-          className="flex-1 h-4 bg-white/10 rounded ml-4 animate-pulse"
+          className="flex-1 h-8 bg-black/30 border border-purple-500/30 rounded animate-pulse"
           style={{ animationDelay: "0.3s" }}
         />
-      </div>
-
-      {/* Content area with better positioning */}
-      <div className="p-4 space-y-4 h-full">
-        {/* Title area */}
-        <div className="space-y-2">
+        <div className="flex items-center gap-1 ml-2">
           <div
-            className="h-5 bg-white/10 rounded w-2/3 animate-pulse"
+            className="h-7 w-16 bg-white/5 rounded-lg animate-pulse"
             style={{ animationDelay: "0.4s" }}
           />
           <div
-            className="h-4 bg-white/5 rounded w-1/3 animate-pulse"
+            className="h-8 w-8 bg-white/5 rounded animate-pulse"
             style={{ animationDelay: "0.5s" }}
           />
         </div>
+      </div>
 
-        {/* Main content area */}
-        <div className="flex-1 bg-white/5 rounded-lg p-4 space-y-3 transition-all duration-500 ease-in-out">
-          <div
-            className="h-4 bg-white/10 rounded w-full animate-pulse"
-            style={{ animationDelay: "0.6s" }}
-          />
-          <div
-            className="h-4 bg-white/10 rounded w-4/5 animate-pulse"
-            style={{ animationDelay: "0.7s" }}
-          />
-          <div
-            className="h-4 bg-white/10 rounded w-3/5 animate-pulse"
-            style={{ animationDelay: "0.8s" }}
-          />
-
-          {/* Content blocks */}
-          <div className="grid grid-cols-2 gap-3 mt-4">
-            <div
-              className="h-20 bg-white/5 rounded animate-pulse"
-              style={{ animationDelay: "0.9s" }}
-            />
-            <div
-              className="h-20 bg-white/5 rounded animate-pulse"
-              style={{ animationDelay: "1.0s" }}
-            />
+      {/* Content area */}
+      <div className="flex-1 overflow-hidden animate-pulse bg-white/5">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+            <p className="text-white/60 text-sm">Loading preview...</p>
           </div>
-
-          <div
-            className="h-24 bg-white/5 rounded mt-3 animate-pulse"
-            style={{ animationDelay: "1.1s" }}
-          />
         </div>
       </div>
     </div>
@@ -173,27 +147,26 @@ export function SkeletonProjectListClient({ className = "" }: SkeletonProps) {
       </div>
 
       {/* List items with better spacing */}
-      <div className="flex-1 overflow-hidden p-2">
-        <div className="space-y-1">
-          {Array.from({ length: 7 }).map((_, i) => (
+      <div className="flex-1 overflow-hidden p-2 md:p-3 lg:p-4">
+        <div className="space-y-2 md:space-y-3 lg:space-y-4">
+          {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 p-2 bg-white/5 rounded-lg hover:bg-white/10 transition-all duration-300 ease-in-out"
+              className="bg-black/60 backdrop-blur-sm border border-purple-500/20 rounded-lg transition-all duration-200 flex items-center justify-center py-2 md:py-3 lg:py-4 animate-pulse"
+              style={{
+                minHeight: "44px",
+                height: "auto",
+                animationDelay: `${0.3 + i * 0.1}s`,
+              }}
             >
               <div
-                className="w-8 h-8 bg-white/10 rounded-lg flex-shrink-0 animate-pulse"
-                style={{ animationDelay: `${0.3 + i * 0.1}s` }}
+                className="text-white m-0 font-medium text-xs md:text-sm lg:text-base text-center capitalize bg-white/10 rounded w-3/4 animate-pulse"
+                style={{
+                  animationDelay: `${0.4 + i * 0.1}s`,
+                  height: "1em",
+                  lineHeight: "1em",
+                }}
               />
-              <div className="flex-1 space-y-1">
-                <div
-                  className="h-3 bg-white/10 rounded w-3/4 animate-pulse"
-                  style={{ animationDelay: `${0.4 + i * 0.1}s` }}
-                />
-                <div
-                  className="h-2 bg-white/5 rounded w-1/2 animate-pulse"
-                  style={{ animationDelay: `${0.5 + i * 0.1}s` }}
-                />
-              </div>
             </div>
           ))}
         </div>
@@ -207,13 +180,13 @@ export function SkeletonFeaturedProjectsClient({
 }: SkeletonProps) {
   return (
     <div
-      className={`hidden lg:block overflow-hidden h-full relative transition-all duration-500 ease-in-out ${className}`}
+      className={`hidden lg:block col-span-6 row-span-1 row-start-6 overflow-hidden h-full relative w-full transition-all duration-500 ease-in-out ${className}`}
     >
       <div className="flex h-full gap-1">
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className="flex-shrink-0 h-full rounded-2xl lg:rounded-3xl overflow-hidden bg-black/80 backdrop-blur-sm transition-all duration-500 ease-in-out"
+            className="flex-shrink-0 h-full rounded-2xl lg:rounded-3xl overflow-hidden bg-black/80 backdrop-blur-sm border-2 border-purple-500/20 transition-all duration-500 ease-in-out"
             style={{
               flex: "0 0 calc(16.666% - 5px)",
               minWidth: "150px",
@@ -244,7 +217,7 @@ export function SkeletonFeaturedProjectsClient({
               </div>
               {/* Selection indicator placeholder */}
               <div
-                className="w-2 h-2 bg-purple-500/20 rounded-full animate-pulse"
+                className="absolute top-2 right-2 w-2 h-2 bg-purple-500/20 rounded-full animate-pulse"
                 style={{ animationDelay: `${0.6 + i * 0.1}s` }}
               />
             </div>

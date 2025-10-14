@@ -78,14 +78,14 @@ export default function FeaturedProjectsClient({
   return (
     <div
       ref={scrollContainerRef}
-      className="hidden lg:block col-span-6 row-span-1 row-start-6 overflow-hidden h-full relative"
+      className="hidden lg:block col-span-6 row-span-1 row-start-6 overflow-hidden h-full relative w-full"
       style={{
         scrollbarWidth: "none",
         msOverflowStyle: "none",
       }}
     >
       <div
-        className="scroll-content flex h-full"
+        className="scroll-content flex h-full w-full"
         style={{
           width: "max-content",
           gap: "5px",

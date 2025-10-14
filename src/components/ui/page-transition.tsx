@@ -27,7 +27,7 @@ export default function PageTransition({
 
   return (
     <div
-      className={`transition-all duration-300 ease-in-out ${
+      className={`transition-all duration-300 ease-in-out w-full max-w-full overflow-hidden ${
         isTransitioning
           ? "opacity-0 scale-95 translate-y-2"
           : "opacity-100 scale-100 translate-y-0"
