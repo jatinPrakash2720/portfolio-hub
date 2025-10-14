@@ -302,7 +302,7 @@ export default function PortfolioPage() {
           }}
         >
           {/* Description Box - Mobile: 2x3, Tablet: 6x3, Desktop: 6x4 */}
-          <div className="col-span-3 row-span-3 col-start-1 row-start-1 md:col-span-6 md:row-span-3 lg:col-span-5 lg:row-span-4 md:col-start-1 md:row-start-2 lg:row-start-2 rounded-2xl md:rounded-3xl border-2 p-1 md:p-4 lg:p-6 flex flex-col z-10 group hover:border-transparent transition-all duration-300 hover:bg-opacity-80 relative backdrop-blur-sm bg-[#0F0F0F]/80 border-purple-500/20">
+          <div className="col-span-3 row-span-3 col-start-1 row-start-1 md:col-span-5 md:row-span-3 lg:col-span-5 lg:row-span-4 md:col-start-1 md:row-start-2 lg:row-start-2 rounded-2xl md:rounded-3xl border-2 p-1 md:p-4 lg:p-6 flex flex-col z-10 group hover:border-transparent transition-all duration-300 hover:bg-opacity-80 relative backdrop-blur-sm bg-[#0F0F0F]/80 border-purple-500/20">
             <h2 className="text-[14px] md:text-xl lg:text-2xl font-bold mb-0.5 md:mb-3 lg:mb-4 pointer-events-none relative z-0">
               About Me
             </h2>
@@ -368,7 +368,7 @@ export default function PortfolioPage() {
           </div>
 
           {/* LeetCode Button - Mobile: 3x1, Tablet: 2x1, Desktop: 2x1 */}
-          <div className="col-span-4 row-span-1 col-start-1 row-start-4 md:col-span-2 md:row-start-5 lg:row-start-6 md:col-start-1 z-10">
+          <div className="col-span-3 row-span-1 col-start-2 row-start-4 md:col-span-2 md:row-start-5 lg:row-start-6 md:col-start-1 z-10">
             <Suspense
               fallback={<SkeletonNavigationButton className="h-full" />}
             >
@@ -455,11 +455,9 @@ export default function PortfolioPage() {
           </div>
 
           {/* PDF Button - Mobile: 2x1, Tablet: 1x1, Desktop: 1x1 */}
-          <div className="col-span-1 row-span-1 col-start-4 row-start-5 md:col-span-1 md:row-span-1 md:col-start-8 md:row-start-4 lg:col-span-1 lg:row-span-2 lg:col-start-6 lg:row-start-4 z-10">
+          <div className="col-span-1 row-span-1 col-start-1 row-start-4 md:col-span-1 md:row-span-2 md:row-start-2 md:col-start-6  lg:col-span-1 lg:row-span-2 lg:col-start-6 lg:row-start-4 z-10">
             <button
-              onClick={() =>
-                window.open("/resumes/Jatin Prakash.pdf", "_blank")
-              }
+              onClick={() => window.open("/resume", "_blank")}
               className="w-full h-full rounded-2xl lg:rounded-3xl border-2 p-0.5 lg:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-purple-700/15 border-purple-600/40 hover:bg-purple-600/20"
             >
               <div className="flex flex-col items-center justify-center">
@@ -493,7 +491,7 @@ export default function PortfolioPage() {
           </div>
 
           {/* Cubes Animation - Mobile: 2x1, Tablet: 1x1, Desktop: 1x1 */}
-          <div className="col-span-2 row-span-1 col-start-5 row-start-5 md:col-span-1 md:row-span-1 md:col-start-7 md:row-start-5 lg:col-span-1 lg:row-span-2 lg:col-start-6 lg:row-start-2 rounded-2xl md:rounded-3xl border-2 overflow-hidden z-10 group hover:border-transparent transition-all duration-300 backdrop-blur-sm bg-[#0F0F0F]/80 border-purple-500/20">
+          <div className="md:col-span-1 md:row-span-1 md:col-start-6 md:row-start-4 lg:col-span-1 lg:row-span-2 lg:col-start-6 lg:row-start-2 rounded-2xl md:rounded-3xl border-2 overflow-hidden z-10 group hover:border-transparent transition-all duration-300 backdrop-blur-sm bg-[#0F0F0F]/80 border-purple-500/20 hidden md:block">
             <Suspense
               fallback={
                 <div className="w-full h-full flex items-center justify-center">
