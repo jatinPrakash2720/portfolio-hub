@@ -13,7 +13,13 @@ interface UserDataContextType {
   userData: User | null
   loading: boolean
   error: string | null
+  projectsLoading: boolean
+  contactLoading: boolean
+  introLoading: boolean
   prefetchUserData: (username: string) => Promise<void>
+  setProjectsLoading: (loading: boolean) => void
+  setContactLoading: (loading: boolean) => void
+  setIntroLoading: (loading: boolean) => void
 }
 
 const UserDataContext = createContext<UserDataContextType | undefined>(
@@ -24,6 +30,9 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
   const [userData, setUserData] = useState<User | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [projectsLoading, setProjectsLoading] = useState(false)
+  const [contactLoading, setContactLoading] = useState(false)
+  const [introLoading, setIntroLoading] = useState(false)
 
   const prefetchUserData = async (username: string) => {
     if (userData || loading) {
@@ -56,7 +65,18 @@ export function UserDataProvider({ children }: { children: ReactNode }) {
 
   return (
     <UserDataContext.Provider
-      value={{ userData, loading, error, prefetchUserData }}
+      value={{
+        userData,
+        loading,
+        error,
+        projectsLoading,
+        contactLoading,
+        introLoading,
+        prefetchUserData,
+        setProjectsLoading,
+        setContactLoading,
+        setIntroLoading,
+      }}
     >
       {children}
     </UserDataContext.Provider>

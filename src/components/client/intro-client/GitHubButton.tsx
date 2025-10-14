@@ -16,14 +16,37 @@ export function GitHubButton({ githubUsername }: GitHubButtonProps) {
 
   useEffect(() => {
     const fetchGitHubData = async () => {
+      if (!githubUsername) {
+        setLoading(false)
+        return
+      }
+
       try {
         const response = await fetch(
           `https://api.github.com/users/${githubUsername}`
         )
-        if (response.ok) {
-          const data: GitHubData = await response.json()
-          setRepoCount(data.public_repos)
+
+        if (!response.ok) {
+          console.warn(
+            `GitHub API returned ${response.status}: ${response.statusText}`
+          )
+          return
         }
+
+        const responseText = await response.text()
+        console.log(
+          "GitHub API response:",
+          responseText.substring(0, 200) + "..."
+        )
+
+        // Check if response is HTML instead of JSON
+        if (responseText.trim().startsWith("<")) {
+          console.warn("GitHub API returned HTML instead of JSON")
+          return
+        }
+
+        const data: GitHubData = JSON.parse(responseText)
+        setRepoCount(data.public_repos)
       } catch (error) {
         console.error("Failed to fetch GitHub data:", error)
       } finally {

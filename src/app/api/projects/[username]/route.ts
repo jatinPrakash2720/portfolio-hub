@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getUser } from "@/services/userServices"
+import { getAllProjectsSelective } from "@/services/projectServices"
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ username: string }> }
 ) {
   try {
-    console.log("Users API route called")
+    console.log("Projects API route called")
     const { username } = await params
     console.log("Username extracted:", username)
 
@@ -18,19 +18,22 @@ export async function GET(
       )
     }
 
-    console.log("Fetching user data from Firebase for:", username)
-    const userData = await getUser(username)
-    console.log("User data received:", userData ? "Data found" : "No data")
+    console.log("Fetching projects data from Firebase for:", username)
+    const projectsData = await getAllProjectsSelective(username)
+    console.log(
+      "Projects data received:",
+      projectsData ? "Data found" : "No data"
+    )
 
-    if (!userData) {
-      console.log("No user found for username:", username)
-      return NextResponse.json({ error: "User not found" }, { status: 404 })
+    if (!projectsData) {
+      console.log("No projects found for username:", username)
+      return NextResponse.json({ error: "Projects not found" }, { status: 404 })
     }
 
-    console.log("Returning user data successfully")
-    return NextResponse.json(userData)
+    console.log("Returning projects data successfully")
+    return NextResponse.json(projectsData)
   } catch (error) {
-    console.error("Error in user API route:", error)
+    console.error("Error in projects API route:", error)
     console.error(
       "Error details:",
       error instanceof Error ? error.message : String(error)

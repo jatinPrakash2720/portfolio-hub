@@ -1,24 +1,181 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState, lazy, Suspense } from "react"
 import { useUserDataContext } from "@/contexts/UserDataContext"
-import TextTypeClient from "../client/intro-client/TextTypeClient"
-import LogoLoopClient from "../client/intro-client/LogoLoopClient"
-import PixelBlastClient from "../client/intro-client/PixelBlastClient"
-import Link from "next/link"
-import { LeetCodeButton } from "../client/intro-client/LeetCodeButton"
-import { GitHubButton } from "../client/intro-client/GitHubButton"
-import { LinkedInButton } from "../client/intro-client/LinkedInButton"
-import LoadingSpinner from "../ui/loading-spinner"
+import { useRouter } from "next/navigation"
+
+// Lazy load UI components
+const TextType = lazy(() => import("../ui/TypeText"))
+const LogoLoop = lazy(() => import("../ui/LogoLoop"))
+const PixelBlast = lazy(() => import("../ui/PixelBlast"))
+
+// Tech logo mapping function
+const getTechLogos = (techStack: string[]) => {
+  const techLogoMap: Record<
+    string,
+    { src: string; alt: string; href: string }
+  > = {
+    react: {
+      src: "/images/icons/react.svg",
+      alt: "React",
+      href: "https://react.dev",
+    },
+    next: {
+      src: "/images/icons/nextjs.svg",
+      alt: "Next.js",
+      href: "https://nextjs.org",
+    },
+    typescript: {
+      src: "/images/icons/typescript.svg",
+      alt: "TypeScript",
+      href: "https://www.typescriptlang.org",
+    },
+    tailwind: {
+      src: "/images/icons/tailwindcss.svg",
+      alt: "Tailwind CSS",
+      href: "https://tailwindcss.com",
+    },
+    node: {
+      src: "/images/icons/nodejs.svg",
+      alt: "Node.js",
+      href: "https://nodejs.org",
+    },
+    python: {
+      src: "/images/icons/python.svg",
+      alt: "Python",
+      href: "https://python.org",
+    },
+    javascript: {
+      src: "/images/icons/javascript.svg",
+      alt: "JavaScript",
+      href: "https://javascript.info",
+    },
+    mongodb: {
+      src: "/images/icons/mongodb.svg",
+      alt: "MongoDB",
+      href: "https://mongodb.com",
+    },
+    postgresql: {
+      src: "/images/icons/postgresql.svg",
+      alt: "PostgreSQL",
+      href: "https://postgresql.org",
+    },
+    express: {
+      src: "/images/icons/express.svg",
+      alt: "Express.js",
+      href: "https://expressjs.com",
+    },
+    git: {
+      src: "/images/icons/git.svg",
+      alt: "Git",
+      href: "https://git-scm.com",
+    },
+    docker: {
+      src: "/images/icons/docker.svg",
+      alt: "Docker",
+      href: "https://docker.com",
+    },
+    figma: {
+      src: "/images/icons/figma.svg",
+      alt: "Figma",
+      href: "https://figma.com",
+    },
+    graphql: {
+      src: "/images/icons/graphql.svg",
+      alt: "GraphQL",
+      href: "https://graphql.org",
+    },
+    redis: {
+      src: "/images/icons/redis.svg",
+      alt: "Redis",
+      href: "https://redis.io",
+    },
+    linux: {
+      src: "/images/icons/linux.svg",
+      alt: "Linux",
+      href: "https://linux.org",
+    },
+    vercel: {
+      src: "/images/icons/vercel.svg",
+      alt: "Vercel",
+      href: "https://vercel.com",
+    },
+    axios: {
+      src: "/images/icons/axios.svg",
+      alt: "Axios",
+      href: "https://axios-http.com",
+    },
+    cloudinary: {
+      src: "/images/icons/cloudinary.svg",
+      alt: "Cloudinary",
+      href: "https://cloudinary.com",
+    },
+    vite: {
+      src: "/images/icons/vite.svg",
+      alt: "Vite",
+      href: "https://vite.dev",
+    },
+  }
+
+  return techStack
+    .map((tech) => {
+      const logo = techLogoMap[tech.toLowerCase()]
+      if (!logo) {
+        console.warn(`No logo found for tech: ${tech}`)
+        return null
+      }
+      return {
+        node: (
+          <img
+            src={logo.src}
+            alt={logo.alt}
+            className="w-8 h-8 brightness-0 invert"
+          />
+        ),
+        title: tech,
+        href: logo.href,
+      }
+    })
+    .filter((logo): logo is NonNullable<typeof logo> => logo !== null)
+}
+const LeetCodeButton = lazy(() =>
+  import("../client/intro-client/LeetCodeButton").then((mod) => ({
+    default: mod.LeetCodeButton,
+  }))
+)
+const GitHubButton = lazy(() =>
+  import("../client/intro-client/GitHubButton").then((mod) => ({
+    default: mod.GitHubButton,
+  }))
+)
+const LinkedInButton = lazy(() =>
+  import("../client/intro-client/LinkedInButton").then((mod) => ({
+    default: mod.LinkedInButton,
+  }))
+)
 import {
   SkeletonBox,
   SkeletonText,
   SkeletonProfile,
   SkeletonTechLogos,
+  SkeletonNavigationButton,
 } from "../ui/skeleton-loading"
 
 export default function PortfolioPage() {
-  const { userData, loading, error, prefetchUserData } = useUserDataContext()
+  const {
+    userData,
+    loading,
+    error,
+    projectsLoading,
+    contactLoading,
+    prefetchUserData,
+    setProjectsLoading,
+    setContactLoading,
+    setIntroLoading,
+  } = useUserDataContext()
+  const router = useRouter()
+  const [isNavigatingToProjects, setIsNavigatingToProjects] = useState(false)
+  const [isNavigatingToContact, setIsNavigatingToContact] = useState(false)
 
   // Fallback: If data wasn't prefetched, fetch it now
   useEffect(() => {
@@ -27,6 +184,39 @@ export default function PortfolioPage() {
       prefetchUserData("jatin")
     }
   }, [userData, loading, error, prefetchUserData])
+
+  // Clear intro loading state when component mounts
+  useEffect(() => {
+    setIntroLoading(false)
+  }, [setIntroLoading])
+
+  // Handle projects navigation with loading state
+  const handleProjectsNavigation = async () => {
+    setIsNavigatingToProjects(true)
+    setProjectsLoading(true)
+
+    // Small delay to show the loading state
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
+    // Construct URL with query parameters
+    const githubReposParam = (userData?.githubRepos || []).join(",")
+    const url = githubReposParam
+      ? `/projects?githubRepos=${encodeURIComponent(githubReposParam)}`
+      : "/projects"
+
+    router.push(url)
+  }
+
+  // Handle contact navigation with loading state
+  const handleContactNavigation = async () => {
+    setIsNavigatingToContact(true)
+    setContactLoading(true)
+
+    // Small delay to show the loading state
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
+    router.push("/contact")
+  }
 
   // Debug logging
   console.log("PortfolioPage render:", {
@@ -73,7 +263,21 @@ export default function PortfolioPage() {
   return (
     <div className="h-screen flex relative transition-colors duration-300 bg-black text-white">
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <PixelBlastClient />
+        <Suspense fallback={null}>
+          <PixelBlast
+            variant="circle"
+            pixelSize={4}
+            color="#A855F7"
+            patternScale={2}
+            patternDensity={0.8}
+            pixelSizeJitter={0.3}
+            enableRipples={false}
+            liquid={false}
+            speed={0.3}
+            edgeFade={0.15}
+            transparent
+          />
+        </Suspense>
       </div>
       <div className="absolute inset-0 z-0 pointer-events-none transition-colors duration-300 bg-purple-900/10" />
 
@@ -101,7 +305,24 @@ export default function PortfolioPage() {
               {loading ? (
                 <SkeletonText lines={4} />
               ) : userData?.bio ? (
-                <TextTypeClient text={userData.bio} />
+                <Suspense
+                  fallback={
+                    <div className="text-white/60 animate-pulse">
+                      Loading...
+                    </div>
+                  }
+                >
+                  <TextType
+                    text={userData.bio}
+                    as="h2"
+                    typingSpeed={80}
+                    pauseDuration={2000}
+                    showCursor={true}
+                    cursorCharacter="|"
+                    cursorClassName="text-purple-400"
+                    loop={true}
+                  />
+                </Suspense>
               ) : (
                 <div className="text-white/60">Loading bio...</div>
               )}
@@ -127,78 +348,104 @@ export default function PortfolioPage() {
               {loading ? (
                 <SkeletonTechLogos />
               ) : (
-                <LogoLoopClient techStack={userData?.techStack || []} />
+                <Suspense
+                  fallback={
+                    <div className="text-white/60 animate-pulse">
+                      Loading tech stack...
+                    </div>
+                  }
+                >
+                  <LogoLoop logos={getTechLogos(userData?.techStack || [])} />
+                </Suspense>
               )}
             </div>
           </div>
 
           {/* LeetCode Button - Mobile: 3x1, Tablet: 2x1, Desktop: 2x1 */}
           <div className="col-span-4 row-span-1 col-start-1 row-start-4 md:col-span-2 md:row-start-5 lg:row-start-6 md:col-start-1 z-10">
-            {loading ? (
-              <SkeletonBox className="h-full" />
-            ) : (
+            <Suspense
+              fallback={<SkeletonNavigationButton className="h-full" />}
+            >
               <LeetCodeButton
                 leetcodeUsername={userData?.socialLinks?.leetcodeProfile || ""}
               />
-            )}
+            </Suspense>
           </div>
 
           {/* LinkedIn Button - Mobile: 3x1, Tablet: 2x1, Desktop: 2x1 */}
           <div className="col-span-3 row-span-1 col-start-4 row-start-5 md:col-span-2 md:row-start-5 lg:row-start-6 md:col-start-3 z-10">
-            {loading ? (
-              <SkeletonBox className="h-full" />
-            ) : (
+            <Suspense
+              fallback={<SkeletonNavigationButton className="h-full" />}
+            >
               <LinkedInButton
                 linkedinUrl={userData?.socialLinks?.linkedInProfile || ""}
               />
-            )}
+            </Suspense>
           </div>
 
           {/* GitHub Button - Mobile: 3x1, Tablet: 2x1, Desktop: 2x1 */}
           <div className="col-span-3 row-span-1 col-start-4 row-start-3 md:col-span-2 md:row-start-5 lg:row-start-6 md:col-start-5 z-10">
-            {loading ? (
-              <SkeletonBox className="h-full" />
-            ) : (
+            <Suspense
+              fallback={<SkeletonNavigationButton className="h-full" />}
+            >
               <GitHubButton
                 githubUsername={userData?.socialLinks?.githubProfile || ""}
               />
-            )}
+            </Suspense>
           </div>
 
           {/* Projects Button - Mobile: 2x1, Tablet: 2x1, Desktop: 2x1 */}
           <div className="col-span-2 row-span-1 col-start-5 row-start-4 md:col-span-2 md:row-start-4 lg:row-start-5 lg:col-start-7 md:col-start-7 z-10">
-            <Link
-              href={{
-                pathname: "/projects",
-                query: {
-                  githubRepos: (userData?.githubRepos || []).join(","),
-                },
-              }}
-              prefetch={true}
+            <button
+              onClick={handleProjectsNavigation}
+              disabled={isNavigatingToProjects || projectsLoading}
+              className="w-full h-full rounded-2xl lg:rounded-3xl border-2 p-0.5 lg:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-purple-500/15 border-purple-400/40 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <button className="w-full h-full rounded-2xl lg:rounded-3xl border-2 p-0.5 lg:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-purple-500/15 border-purple-400/40">
-                <div className="font-semibold text-[13px] lg:text-base group-hover:text-purple-400 transition-colors duration-300">
-                  Projects
-                </div>
-                <div className="text-[11px] lg:text-sm font-light text-white/80">
-                  Portfolio
-                </div>
-              </button>
-            </Link>
+              {isNavigatingToProjects || projectsLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mb-1"></div>
+                  <div className="text-[11px] lg:text-sm font-light text-black/80">
+                    Loading...
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="font-semibold text-[13px] lg:text-base group-hover:text-purple-400 transition-colors duration-300">
+                    Projects
+                  </div>
+                  <div className="text-[11px] lg:text-sm font-light text-black/80">
+                    Portfolio
+                  </div>
+                </>
+              )}
+            </button>
           </div>
 
           {/* Contact Button - Mobile: 2x1, Tablet: 2x1, Desktop: 2x1 */}
           <div className="col-span-6 row-span-1 col-start-1 row-start-6 md:col-span-2 md:row-start-5 lg:row-start-6 lg:col-start-7 md:col-start-7 z-10">
-            <Link href="/contact" prefetch={true}>
-              <button className="w-full h-full rounded-2xl lg:rounded-3xl border-2 p-0.5 lg:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-purple-600/15 border-purple-500/40">
-                <div className="font-semibold text-[13px] lg:text-base group-hover:text-purple-400 transition-colors duration-300">
-                  Contact
-                </div>
-                <div className="text-[11px] lg:text-sm font-light text-white/80">
-                  Get in Touch
-                </div>
-              </button>
-            </Link>
+            <button
+              onClick={handleContactNavigation}
+              disabled={isNavigatingToContact || contactLoading}
+              className="w-full h-full rounded-2xl lg:rounded-3xl border-2 p-0.5 lg:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-purple-600/15 border-purple-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isNavigatingToContact || contactLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mb-1"></div>
+                  <div className="text-[11px] lg:text-sm font-light text-black/80">
+                    Loading...
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="font-semibold text-[13px] lg:text-base group-hover:text-purple-400 transition-colors duration-300">
+                    Contact
+                  </div>
+                  <div className="text-[11px] lg:text-sm font-light text-black/80">
+                    Get in Touch
+                  </div>
+                </>
+              )}
+            </button>
           </div>
 
           {/* Empty space - Mobile: 2x1 (col 4-5, row 5) */}

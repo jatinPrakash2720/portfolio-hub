@@ -16,14 +16,37 @@ export function LeetCodeButton({ leetcodeUsername }: LeetCodeButtonProps) {
 
   useEffect(() => {
     const fetchLeetCodeData = async () => {
+      if (!leetcodeUsername) {
+        setLoading(false)
+        return
+      }
+
       try {
         const response = await fetch(
           `https://leetcode-stats-api.vercel.app/${leetcodeUsername}`
         )
-        if (response.ok) {
-          const data: LeetCodeData = await response.json()
-          setProblemsSolved(data.totalSolved)
+
+        if (!response.ok) {
+          console.warn(
+            `LeetCode API returned ${response.status}: ${response.statusText}`
+          )
+          return
         }
+
+        const responseText = await response.text()
+        console.log(
+          "LeetCode API response:",
+          responseText.substring(0, 200) + "..."
+        )
+
+        // Check if response is HTML instead of JSON
+        if (responseText.trim().startsWith("<")) {
+          console.warn("LeetCode API returned HTML instead of JSON")
+          return
+        }
+
+        const data: LeetCodeData = JSON.parse(responseText)
+        setProblemsSolved(data.totalSolved)
       } catch (error) {
         console.error("Failed to fetch LeetCode data:", error)
       } finally {

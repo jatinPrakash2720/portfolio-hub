@@ -1,7 +1,9 @@
 "use client"
 
-import { useState } from "react"
-import AnimatedListClient from "./AnimatedListClient"
+import { useState, lazy, Suspense } from "react"
+
+// Lazy load UI components
+const AnimatedList = lazy(() => import("../../ui/ai-element/animate-list"))
 
 type ProjectListClientProps = {
   projectTitles: string[]
@@ -44,10 +46,17 @@ export default function ProjectListClient({
       </div>
       <div className="flex-1 overflow-hidden">
         <div className="h-full overflow-y-auto scrollbar-hide">
-          <AnimatedListClient
-            projectNames={projectTitles}
-            handleProjectSelect={handleSelect}
-          />
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center h-full">
+                <div className="animate-pulse text-purple-400">
+                  Loading projects...
+                </div>
+              </div>
+            }
+          >
+            <AnimatedList items={projectTitles} onItemSelect={handleSelect} />
+          </Suspense>
         </div>
       </div>
     </div>

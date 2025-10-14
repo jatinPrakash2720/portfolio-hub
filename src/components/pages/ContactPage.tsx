@@ -1,11 +1,66 @@
 "use client"
 
-import PixelBlastClient from "../client/intro-client/PixelBlastClient"
-import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect, lazy, Suspense } from "react"
+import { ApiResponse } from "@/types/ApiResponse"
+import { useUserDataContext } from "@/contexts/UserDataContext"
+import { useRouter } from "next/navigation"
+
+// Lazy load UI components
+const PixelBlast = lazy(() => import("../ui/PixelBlast"))
 
 export default function ContactPage() {
+  const { userData, setContactLoading, setIntroLoading, setProjectsLoading } =
+    useUserDataContext()
+  const router = useRouter()
   const [copiedItem, setCopiedItem] = useState<string | null>(null)
+  const [isNavigatingToIntro, setIsNavigatingToIntro] = useState(false)
+  const [isNavigatingToProjects, setIsNavigatingToProjects] = useState(false)
+
+  // Form state
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  })
+
+  // UI state
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: "success" | "error" | null
+    message: string
+  }>({ type: null, message: "" })
+
+  // Clear contact loading state when component mounts
+  useEffect(() => {
+    setContactLoading(false)
+  }, [setContactLoading])
+
+  // Navigation handlers
+  const handleIntroNavigation = async () => {
+    setIsNavigatingToIntro(true)
+    setIntroLoading(true)
+
+    // Small delay to show the loading state
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
+    router.push("/intro")
+  }
+
+  const handleProjectsNavigation = async () => {
+    setIsNavigatingToProjects(true)
+    setProjectsLoading(true)
+
+    // Small delay to show the loading state
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
+    // Construct URL with query parameters
+    const githubReposParam = (userData?.githubRepos || []).join(",")
+    const url = githubReposParam
+      ? `/projects?githubRepos=${encodeURIComponent(githubReposParam)}`
+      : "/projects"
+
+    router.push(url)
+  }
 
   const handleCopy = async (text: string, itemName: string) => {
     try {
@@ -16,10 +71,80 @@ export default function ContactPage() {
       console.error("Failed to copy: ", err)
     }
   }
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setSubmitStatus({ type: null, message: "" })
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          userId: userData?.username || "jatin", // Dynamic based on portfolio owner
+          adminEmail: userData?.email || "jatin.prakash.2720@gmail.com", // Dynamic admin email
+        }),
+      })
+
+      const result: ApiResponse = await response.json()
+
+      if (result.success) {
+        setSubmitStatus({
+          type: "success",
+          message:
+            "Message sent successfully! Check your email for confirmation.",
+        })
+        // Reset form
+        setFormData({ name: "", email: "", message: "" })
+      } else {
+        setSubmitStatus({
+          type: "error",
+          message:
+            result.message || "Failed to send message. Please try again.",
+        })
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error)
+      setSubmitStatus({
+        type: "error",
+        message: "Network error. Please check your connection and try again.",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
   return (
     <div className="h-screen flex relative transition-colors duration-300 bg-black text-white">
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <PixelBlastClient />
+        <Suspense fallback={null}>
+          <PixelBlast
+            variant="circle"
+            pixelSize={4}
+            color="#A855F7"
+            patternScale={2}
+            patternDensity={0.8}
+            pixelSizeJitter={0.3}
+            enableRipples={false}
+            liquid={false}
+            speed={0.3}
+            edgeFade={0.15}
+            transparent
+          />
+        </Suspense>
       </div>
       <div className="absolute inset-0 z-0 pointer-events-none transition-colors duration-300 bg-purple-900/10" />
 
@@ -41,13 +166,29 @@ export default function ContactPage() {
           {/* Contact Form - Mobile: 6x5, Tablet: 6x5, Desktop: 6x6 */}
           <div className="col-span-6 row-span-5 col-start-1 row-start-2 md:col-span-6 md:row-span-5 lg:row-span-6 md:col-start-1 md:row-start-1 lg:row-start-1 rounded-2xl md:rounded-3xl border-2 p-3 md:p-6 lg:p-8 flex flex-col z-10 group hover:border-transparent transition-all duration-300 hover:bg-opacity-80 relative backdrop-blur-sm bg-[#0F0F0F]/80 border-purple-500/20">
             <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2 md:mb-4">
-              Let's Collaborate
+              Let&apos;s Collaborate
             </h2>
             <p className="text-[11px] md:text-sm lg:text-base text-white/60 mb-4 md:mb-6">
               Have an idea? Want to work together? Drop me a message!
             </p>
 
-            <form className="flex-1 flex flex-col gap-3 md:gap-4">
+            <form
+              onSubmit={handleSubmit}
+              className="flex-1 flex flex-col gap-3 md:gap-4"
+            >
+              {/* Status Message */}
+              {submitStatus.type && (
+                <div
+                  className={`p-3 rounded-xl text-sm font-medium ${
+                    submitStatus.type === "success"
+                      ? "bg-green-500/20 border border-green-400/40 text-green-400"
+                      : "bg-red-500/20 border border-red-400/40 text-red-400"
+                  }`}
+                >
+                  {submitStatus.message}
+                </div>
+              )}
+
               {/* Name Input */}
               <div>
                 <label
@@ -60,7 +201,12 @@ export default function ContactPage() {
                   type="text"
                   id="name"
                   name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
                   placeholder="Your name"
+                  required
+                  minLength={2}
+                  maxLength={100}
                   className="w-full px-3 md:px-4 py-2 md:py-3 rounded-xl md:rounded-2xl bg-black/50 border border-purple-500/20 text-white text-[11px] md:text-sm focus:outline-none focus:border-purple-500/50 transition-colors"
                 />
               </div>
@@ -77,7 +223,10 @@ export default function ContactPage() {
                   type="email"
                   id="email"
                   name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
                   placeholder="your.email@example.com"
+                  required
                   className="w-full px-3 md:px-4 py-2 md:py-3 rounded-xl md:rounded-2xl bg-black/50 border border-purple-500/20 text-white text-[11px] md:text-sm focus:outline-none focus:border-purple-500/50 transition-colors"
                 />
               </div>
@@ -93,7 +242,12 @@ export default function ContactPage() {
                 <textarea
                   id="message"
                   name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
                   placeholder="Share your ideas..."
+                  required
+                  minLength={10}
+                  maxLength={2000}
                   className="flex-1 w-full px-3 md:px-4 py-2 md:py-3 rounded-xl md:rounded-2xl bg-black/50 border border-purple-500/20 text-white text-[11px] md:text-sm focus:outline-none focus:border-purple-500/50 transition-colors resize-none"
                 />
               </div>
@@ -101,9 +255,21 @@ export default function ContactPage() {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full py-2 md:py-3 rounded-xl md:rounded-2xl bg-purple-500/20 border-2 border-purple-400/40 text-white text-[13px] md:text-base font-semibold hover:bg-purple-500/30 hover:border-purple-400/60 transition-all duration-300"
+                disabled={isSubmitting}
+                className={`w-full py-2 md:py-3 rounded-xl md:rounded-2xl border-2 text-[13px] md:text-base font-semibold transition-all duration-300 ${
+                  isSubmitting
+                    ? "bg-gray-500/20 border-gray-400/40 text-gray-400 cursor-not-allowed"
+                    : "bg-purple-500/20 border-purple-400/40 text-white hover:bg-purple-500/30 hover:border-purple-400/60"
+                }`}
               >
-                Send Message
+                {isSubmitting ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    Sending...
+                  </div>
+                ) : (
+                  "Send Message"
+                )}
               </button>
             </form>
           </div>
@@ -112,7 +278,7 @@ export default function ContactPage() {
           <div className="col-span-6 row-span-1 col-start-1 row-start-1 md:col-span-2 md:row-span-4 md:col-start-7 md:row-start-1 lg:row-start-1 rounded-2xl md:rounded-3xl border-2 p-2 md:p-3 flex md:flex-col items-center md:justify-center gap-2 md:gap-3 z-10 group hover:border-transparent transition-all duration-300 backdrop-blur-sm bg-[#0F0F0F]/80 border-purple-500/20">
             {/* GitHub */}
             <button
-              onClick={() => handleCopy("yourusername", "github")}
+              onClick={() => handleCopy("jatinbuilds", "github")}
               className={`w-full flex items-center justify-between gap-2 px-2 md:px-3 py-1.5 md:py-2 rounded-xl transition-all duration-300 group/icon relative overflow-hidden ${
                 copiedItem === "github"
                   ? "bg-green-500/20 border border-green-400/40"
@@ -132,7 +298,7 @@ export default function ContactPage() {
                 </span>
               ) : (
                 <span className="hidden md:block text-[10px] lg:text-xs text-white/60 flex-1 text-left">
-                  yourusername
+                  jatinbuilds
                 </span>
               )}
               {copiedItem === "github" ? (
@@ -165,7 +331,7 @@ export default function ContactPage() {
             {/* LinkedIn */}
             <button
               onClick={() =>
-                handleCopy("linkedin.com/in/yourusername", "linkedin")
+                handleCopy("linkedin.com/in/jatinbuilds", "linkedin")
               }
               className={`w-full flex items-center justify-between gap-2 px-2 md:px-3 py-1.5 md:py-2 rounded-xl transition-all duration-300 group/icon relative overflow-hidden ${
                 copiedItem === "linkedin"
@@ -186,7 +352,7 @@ export default function ContactPage() {
                 </span>
               ) : (
                 <span className="hidden md:block text-[10px] lg:text-xs text-white/60 flex-1 text-left truncate">
-                  /in/yourusername
+                  /in/jatinbuilds
                 </span>
               )}
               {copiedItem === "linkedin" ? (
@@ -218,7 +384,7 @@ export default function ContactPage() {
 
             {/* Twitter */}
             <button
-              onClick={() => handleCopy("@yourusername", "twitter")}
+              onClick={() => handleCopy("@jatinbuilds", "twitter")}
               className={`w-full flex items-center justify-between gap-2 px-2 md:px-3 py-1.5 md:py-2 rounded-xl transition-all duration-300 group/icon relative overflow-hidden ${
                 copiedItem === "twitter"
                   ? "bg-green-500/20 border border-green-400/40"
@@ -238,7 +404,7 @@ export default function ContactPage() {
                 </span>
               ) : (
                 <span className="hidden md:block text-[10px] lg:text-xs text-white/60 flex-1 text-left">
-                  @yourusername
+                  @jatinbuilds
                 </span>
               )}
               {copiedItem === "twitter" ? (
@@ -270,7 +436,7 @@ export default function ContactPage() {
 
             {/* Email */}
             <button
-              onClick={() => handleCopy("your.email@example.com", "email")}
+              onClick={() => handleCopy("noreply@jatinbuilds.com", "email")}
               className={`w-full flex items-center justify-between gap-2 px-2 md:px-3 py-1.5 md:py-2 rounded-xl transition-all duration-300 group/icon relative overflow-hidden ${
                 copiedItem === "email"
                   ? "bg-green-500/20 border border-green-400/40"
@@ -293,7 +459,7 @@ export default function ContactPage() {
                 </span>
               ) : (
                 <span className="hidden md:block text-[10px] lg:text-xs text-white/60 flex-1 text-left truncate">
-                  your.email@example.com
+                  noreply@jatinbuilds.com
                 </span>
               )}
               {copiedItem === "email" ? (
@@ -380,30 +546,56 @@ export default function ContactPage() {
 
           {/* Profile Button - Desktop: 2x1 */}
           <div className="hidden md:block md:col-span-2 md:row-span-1 md:col-start-7 md:row-start-5 lg:row-start-5 z-10">
-            <Link href="/intro">
-              <button className="w-full h-full rounded-2xl lg:rounded-3xl border-2 p-2 lg:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-purple-500/15 border-purple-400/40">
-                <div className="font-semibold text-sm lg:text-base group-hover:text-purple-400 transition-colors duration-300">
-                  Profile
-                </div>
-                <div className="text-xs lg:text-sm font-light text-white/80">
-                  About Me
-                </div>
-              </button>
-            </Link>
+            <button
+              onClick={handleIntroNavigation}
+              disabled={isNavigatingToIntro}
+              className="w-full h-full rounded-2xl lg:rounded-3xl border-2 p-2 lg:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-purple-500/15 border-purple-400/40 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isNavigatingToIntro ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mb-1"></div>
+                  <div className="text-xs lg:text-sm font-light text-black/80">
+                    Loading...
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="font-semibold text-sm lg:text-base group-hover:text-purple-400 transition-colors duration-300">
+                    Profile
+                  </div>
+                  <div className="text-xs lg:text-sm font-light text-black/80">
+                    About Me
+                  </div>
+                </>
+              )}
+            </button>
           </div>
 
           {/* Projects Button - Desktop: 2x1 */}
           <div className="hidden md:block md:col-span-2 md:row-span-1 md:col-start-7 md:row-start-5 lg:row-start-6 z-10">
-            <Link href="/projects">
-              <button className="w-full h-full rounded-2xl lg:rounded-3xl border-2 p-2 lg:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-purple-500/15 border-purple-400/40">
-                <div className="font-semibold text-sm lg:text-base group-hover:text-purple-400 transition-colors duration-300">
-                  Projects
-                </div>
-                <div className="text-xs lg:text-sm font-light text-white/80">
-                  Portfolio
-                </div>
-              </button>
-            </Link>
+            <button
+              onClick={handleProjectsNavigation}
+              disabled={isNavigatingToProjects}
+              className="w-full h-full rounded-2xl lg:rounded-3xl border-2 p-2 lg:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-purple-500/15 border-purple-400/40 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isNavigatingToProjects ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mb-1"></div>
+                  <div className="text-xs lg:text-sm font-light text-black/80">
+                    Loading...
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="font-semibold text-sm lg:text-base group-hover:text-purple-400 transition-colors duration-300">
+                    Projects
+                  </div>
+                  <div className="text-xs lg:text-sm font-light text-black/80">
+                    Portfolio
+                  </div>
+                </>
+              )}
+            </button>
           </div>
         </div>
       </main>

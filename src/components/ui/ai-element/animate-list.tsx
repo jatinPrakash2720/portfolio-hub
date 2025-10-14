@@ -34,7 +34,7 @@ const AnimatedItem: React.FC<AnimatedItemProps> = ({
       initial={{ scale: 0.7, opacity: 0 }}
       animate={inView ? { scale: 1, opacity: 1 } : { scale: 0.7, opacity: 0 }}
       transition={{ duration: 0.2, delay }}
-      className="mb-2 md:mb-3 cursor-pointer"
+      className="mb-2 md:mb-3 lg:mb-4 cursor-pointer"
     >
       {children}
     </motion.div>
@@ -134,7 +134,7 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
     <div className={`relative w-full ${className}`}>
       <div
         ref={listRef}
-        className={`h-full overflow-y-auto p-2 md:p-3 ${
+        className={`h-full overflow-y-auto p-2 md:p-3 lg:p-4 ${
           displayScrollbar
             ? "[&::-webkit-scrollbar]:w-[8px] [&::-webkit-scrollbar-track]:bg-black/20 [&::-webkit-scrollbar-thumb]:bg-purple-500/50 [&::-webkit-scrollbar-thumb]:rounded-[4px] [&::-webkit-scrollbar-thumb]:hover:bg-purple-500/70"
             : "scrollbar-hide"
@@ -159,7 +159,7 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
             }}
           >
             <div
-              className={`bg-black/60 backdrop-blur-sm border border-purple-500/20 rounded-lg transition-all duration-200 flex items-center justify-center ${
+              className={`bg-black/60 backdrop-blur-sm border border-purple-500/20 rounded-lg transition-all duration-200 flex items-center justify-center lg:min-h-[60px] lg:py-3 ${
                 selectedIndex === index
                   ? "bg-purple-600/20 border-purple-500/50 scale-[1.02]"
                   : "hover:bg-black/80"
@@ -168,8 +168,8 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
                 minHeight: "40px", // Fixed minimum height for mobile/tablet
               }}
             >
-              <p className="text-white m-0 font-medium text-xs md:text-sm lg:text-base text-center">
-                {item}
+              <p className="text-white m-0 font-medium text-xs md:text-sm lg:text-base text-center capitalize">
+                {item.replace(/-/g, " ").replace(/_/g, " ")}
               </p>
             </div>
           </AnimatedItem>

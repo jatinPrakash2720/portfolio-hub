@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
-import LoadingBar from "@/components/ui/loading-bar"
 import PageTransition from "@/components/ui/page-transition"
 import { UserDataProvider } from "@/contexts/UserDataContext"
 
@@ -49,6 +48,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/favicon.svg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -61,7 +63,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <UserDataProvider>
-          <LoadingBar />
           <PageTransition>{children}</PageTransition>
         </UserDataProvider>
       </body>
