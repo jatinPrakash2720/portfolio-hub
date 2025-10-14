@@ -9,6 +9,7 @@ import Image from "next/image"
 const TextType = lazy(() => import("../ui/TypeText"))
 const LogoLoop = lazy(() => import("../ui/LogoLoop"))
 const PixelBlast = lazy(() => import("../ui/PixelBlast"))
+const Cubes = lazy(() => import("../ui/Cubes"))
 
 // Tech logo mapping function
 const getTechLogos = (techStack: string[]) => {
@@ -301,7 +302,7 @@ export default function PortfolioPage() {
           }}
         >
           {/* Description Box - Mobile: 2x3, Tablet: 6x3, Desktop: 6x4 */}
-          <div className="col-span-3 row-span-3 col-start-1 row-start-1 md:col-span-6 md:row-span-3 lg:col-span-6 lg:row-span-4 md:col-start-1 md:row-start-2 lg:row-start-2 rounded-2xl md:rounded-3xl border-2 p-1 md:p-4 lg:p-6 flex flex-col z-10 group hover:border-transparent transition-all duration-300 hover:bg-opacity-80 relative backdrop-blur-sm bg-[#0F0F0F]/80 border-purple-500/20">
+          <div className="col-span-3 row-span-3 col-start-1 row-start-1 md:col-span-6 md:row-span-3 lg:col-span-5 lg:row-span-4 md:col-start-1 md:row-start-2 lg:row-start-2 rounded-2xl md:rounded-3xl border-2 p-1 md:p-4 lg:p-6 flex flex-col z-10 group hover:border-transparent transition-all duration-300 hover:bg-opacity-80 relative backdrop-blur-sm bg-[#0F0F0F]/80 border-purple-500/20">
             <h2 className="text-[14px] md:text-xl lg:text-2xl font-bold mb-0.5 md:mb-3 lg:mb-4 pointer-events-none relative z-0">
               About Me
             </h2>
@@ -453,8 +454,66 @@ export default function PortfolioPage() {
             </button>
           </div>
 
-          {/* Empty space - Mobile: 2x1 (col 4-5, row 5) */}
-          <div className="col-span-2 row-span-1 col-start-4 row-start-5 lg:hidden" />
+          {/* PDF Button - Mobile: 2x1, Tablet: 1x1, Desktop: 1x1 */}
+          <div className="col-span-1 row-span-1 col-start-4 row-start-5 md:col-span-1 md:row-span-1 md:col-start-8 md:row-start-4 lg:col-span-1 lg:row-span-2 lg:col-start-6 lg:row-start-4 z-10">
+            <button
+              onClick={() =>
+                window.open("/resumes/Jatin Prakash.pdf", "_blank")
+              }
+              className="w-full h-full rounded-2xl lg:rounded-3xl border-2 p-0.5 lg:p-3 flex flex-col items-center justify-center transition-all duration-300 group relative hover:border-transparent backdrop-blur-sm bg-purple-700/15 border-purple-600/40 hover:bg-purple-600/20"
+            >
+              <div className="flex flex-col items-center justify-center">
+                <svg
+                  className="w-4 h-4 lg:w-5 lg:h-5 text-purple-400 group-hover:text-purple-300 mb-1 transition-colors duration-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 9h4M10 13h4M10 17h4"
+                  />
+                </svg>
+                <div className="font-semibold text-[11px] lg:text-sm group-hover:text-purple-400 transition-colors duration-300 text-center">
+                  See PDF
+                </div>
+                <div className="text-[9px] lg:text-xs font-light text-white/60 text-center">
+                  Resume
+                </div>
+              </div>
+            </button>
+          </div>
+
+          {/* Cubes Animation - Mobile: 2x1, Tablet: 1x1, Desktop: 1x1 */}
+          <div className="col-span-2 row-span-1 col-start-5 row-start-5 md:col-span-1 md:row-span-1 md:col-start-7 md:row-start-5 lg:col-span-1 lg:row-span-2 lg:col-start-6 lg:row-start-2 rounded-2xl md:rounded-3xl border-2 overflow-hidden z-10 group hover:border-transparent transition-all duration-300 backdrop-blur-sm bg-[#0F0F0F]/80 border-purple-500/20">
+            <Suspense
+              fallback={
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="text-white/60 animate-pulse">Loading...</div>
+                </div>
+              }
+            >
+              <Cubes
+                gridSize={6}
+                maxAngle={45}
+                radius={3}
+                borderStyle="1px dashed #A855F7"
+                faceColor="#1a0b2e"
+                rippleColor="#ff6b6b"
+                rippleSpeed={1.5}
+                autoAnimate={true}
+                rippleOnClick={true}
+              />
+            </Suspense>
+          </div>
         </div>
       </main>
     </div>
