@@ -3,8 +3,7 @@
 import { useEffect, useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { useUserDataContext } from "@/contexts/UserDataContext"
-import { useUsername } from "@/hooks/useUsername"
-import SubdomainTest from "@/components/SubdomainTest"
+import { getDomainInfo } from "@/lib/domainMapping"
 import Image from "next/image"
 
 export default function Home() {
@@ -17,7 +16,6 @@ export default function Home() {
     userData,
     setUsername,
   } = useUserDataContext()
-  const extractedUsername = useUsername()
   const router = useRouter()
 
   // Memoize domain check to prevent unnecessary re-renders
@@ -31,21 +29,17 @@ export default function Home() {
     return { host: "", href: "" }
   }, [])
 
-  // Set username from subdomain and prefetch user data
+  // Set username and display name from domain mapping
   useEffect(() => {
-    if (extractedUsername) {
-      setUsername(extractedUsername)
-      setShowName(extractedUsername)
-    } else {
-      setShowName(domainInfo.host)
-    }
+    const { username, displayName } = getDomainInfo(domainInfo.host)
+    setUsername(username)
+    setShowName(displayName)
     setShowButton(true)
 
     // Start prefetching user data immediately
-    const usernameToUse = extractedUsername || "jatin" // fallback to jatin if no subdomain
-    console.log("Starting data prefetch on root page for:", usernameToUse)
-    prefetchUserData(usernameToUse)
-  }, [domainInfo.host, extractedUsername, prefetchUserData, setUsername])
+    console.log("Starting data prefetch on root page for:", username)
+    prefetchUserData(username)
+  }, [domainInfo.host, prefetchUserData, setUsername])
 
   // Navigate when data is ready
   useEffect(() => {
@@ -61,7 +55,6 @@ export default function Home() {
 
   return (
     <div className="h-screen w-full bg-purple-950/10 flex flex-col items-center justify-center overflow-hidden">
-      <SubdomainTest />
       {showWelcome ? (
         // Welcome Loading Screen
         <div className="flex flex-col items-center justify-center">
