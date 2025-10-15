@@ -624,7 +624,7 @@ export default function ContactPage() {
                     "github"
                   )
                 }
-                className={`w-full h-full flex items-center justify-between gap-2 px md:px-4 lg:col-span-1 lg:row-span-1  rounded-xl transition-all duration-300 group/icon relative overflow-hidden ${
+                className={`w-full h-full flex items-center justify-between gap-2 px-2 sm:px-3 md:px-4 py-2 sm:py-3 md:py-4 lg:col-span-1 lg:row-span-1  rounded-xl transition-all duration-300 group/icon relative overflow-hidden ${
                   copiedItem === "github"
                     ? "bg-green-500/20 border border-green-400/40"
                     : "bg-purple-500/10 hover:bg-purple-500/20"
@@ -687,7 +687,7 @@ export default function ContactPage() {
                     "linkedin"
                   )
                 }
-                className={`w-full h-full flex items-center justify-between gap-2 px-3 md:px-4  lg:col-span-1 lg:row-span-1  rounded-xl transition-all duration-300 group/icon relative overflow-hidden ${
+                className={`w-full h-full flex items-center justify-between gap-2 px-2 sm:px-3 md:px-4 py-2 sm:py-3 md:py-4 lg:col-span-1 lg:row-span-1  rounded-xl transition-all duration-300 group/icon relative overflow-hidden ${
                   copiedItem === "linkedin"
                     ? "bg-green-500/20 border border-green-400/40"
                     : "bg-purple-500/10 hover:bg-purple-500/20"
@@ -892,7 +892,7 @@ export default function ContactPage() {
                 onClick={() =>
                   handleCopy(userData?.phone || "+91 7668166475", "phone")
                 }
-                className={`w-full h-full flex items-center justify-between gap-2 px-3 md:px-4  lg:col-span-1 lg:row-span-1 lg:col-start-2 lg:row-start-2  rounded-xl transition-all duration-300 group/icon relative overflow-hidden ${
+                className={`w-full h-full flex items-center justify-between gap-2 px-2 sm:px-3 md:px-4 py-2 sm:py-3 md:py-4 lg:col-span-1 lg:row-span-1 lg:col-start-2 lg:row-start-2  rounded-xl transition-all duration-300 group/icon relative overflow-hidden ${
                   copiedItem === "phone"
                     ? "bg-green-500/20 border border-green-400/40"
                     : "bg-purple-500/10 hover:bg-purple-500/20"
