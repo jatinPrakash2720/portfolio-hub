@@ -368,7 +368,7 @@ export default function PortfolioPage() {
           </div>
 
           {/* LeetCode Button - Mobile: 3x1, Tablet: 2x1, Desktop: 2x1 */}
-          <div className="col-span-3 row-span-1 col-start-2 row-start-4 md:col-span-2 md:row-start-5 lg:row-start-6 md:col-start-1 z-10">
+          <div className="col-span-4 row-span-1 col-start-1 row-start-6 md:col-span-2 md:row-start-5 lg:row-start-6 md:col-start-1 z-10">
             <Suspense
               fallback={<SkeletonNavigationButton className="h-full" />}
             >
@@ -401,7 +401,7 @@ export default function PortfolioPage() {
           </div>
 
           {/* Projects Button - Mobile: 2x1, Tablet: 2x1, Desktop: 2x1 */}
-          <div className="col-span-2 row-span-1 col-start-5 row-start-4 md:col-span-2 md:row-start-4 lg:row-start-5 lg:col-start-7 md:col-start-7 z-10">
+          <div className="col-span-4 row-span-1 col-start-3 row-start-4 md:col-span-2 md:row-start-4 lg:row-start-5 lg:col-start-7 md:col-start-7 z-10">
             <button
               onClick={handleProjectsNavigation}
               disabled={isNavigatingToProjects || projectsLoading}
@@ -428,7 +428,7 @@ export default function PortfolioPage() {
           </div>
 
           {/* Contact Button - Mobile: 2x1, Tablet: 2x1, Desktop: 2x1 */}
-          <div className="col-span-6 row-span-1 col-start-1 row-start-6 md:col-span-2 md:row-start-5 lg:row-start-6 lg:col-start-7 md:col-start-7 z-10">
+          <div className="col-span-2 row-span-1 col-start-5 row-start-6 md:col-span-2 md:row-start-5 lg:row-start-6 lg:col-start-7 md:col-start-7 z-10">
             <button
               onClick={handleContactNavigation}
               disabled={isNavigatingToContact || contactLoading}
@@ -455,7 +455,7 @@ export default function PortfolioPage() {
           </div>
 
           {/* PDF Button - Mobile: 2x1, Tablet: 1x1, Desktop: 1x1 */}
-          <div className="col-span-1 row-span-1 col-start-1 row-start-4 md:col-span-1 md:row-span-2 md:row-start-2 md:col-start-6  lg:col-span-1 lg:row-span-2 lg:col-start-6 lg:row-start-4 z-10">
+          <div className="col-span-2 row-span-1 col-start-1 row-start-4 md:col-span-1 md:row-span-2 md:row-start-2 md:col-start-6  lg:col-span-1 lg:row-span-2 lg:col-start-6 lg:row-start-4 z-10">
             <button
               onClick={() => {
                 const pdfUrl = `${window.location.origin}/Jatin-Prakash.pdf`;

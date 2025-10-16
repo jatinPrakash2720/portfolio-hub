@@ -72,12 +72,6 @@ export default function ContactPage() {
     message: string // Status message to display to user
   }>({ type: null, message: "" })
 
-  // Message modal state for mobile devices
-  // isMessageModalOpen: controls visibility of the message input modal
-  // tempMessage: temporary storage for message content while modal is open
-  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false)
-  const [tempMessage, setTempMessage] = useState("")
-
   // Computed property to check if form is valid for submission
   // Checks that all required fields have content (after trimming whitespace)
   // name must have at least 1 character
@@ -94,6 +88,26 @@ export default function ContactPage() {
       return "border-green-500/70 focus:border-green-500/90"
     } else if (submitStatus.type === "error") {
       return "border-red-500/70 focus:border-red-500/90"
+    } else {
+      return "border-purple-500/20 focus:border-purple-500/50"
+    }
+  }
+
+  // Helper function to get email input border styling (only email gets red on error)
+  const getEmailBorderStyle = () => {
+    if (submitStatus.type === "success") {
+      return "border-green-500/70 focus:border-green-500/90"
+    } else if (submitStatus.type === "error") {
+      return "border-red-500/70 focus:border-red-500/90"
+    } else {
+      return "border-purple-500/20 focus:border-purple-500/50"
+    }
+  }
+
+  // Helper function to get other input border styling (name, message don't get red on error)
+  const getOtherInputBorderStyle = () => {
+    if (submitStatus.type === "success") {
+      return "border-green-500/70 focus:border-green-500/90"
     } else {
       return "border-purple-500/20 focus:border-purple-500/50"
     }
@@ -174,33 +188,6 @@ export default function ContactPage() {
       ...prev, // Spread existing form data
       [name]: value, // Update the specific field that changed
     }))
-  }
-
-  // Message modal handlers for mobile devices
-  // Opens the message input modal and copies current message to temp storage
-  const openMessageModal = () => {
-    // Copy current message to temporary storage
-    setTempMessage(formData.message)
-    // Show the modal
-    setIsMessageModalOpen(true)
-  }
-
-  // Closes the message modal and saves the temporary message back to form data
-  const closeMessageModal = () => {
-    // Update form data with the temporary message content
-    setFormData((prev) => ({
-      ...prev, // Keep existing form data
-      message: tempMessage, // Update message with temp content
-    }))
-    // Hide the modal
-    setIsMessageModalOpen(false)
-  }
-
-  // Handles changes in the message modal textarea
-  // Updates the temporary message state as user types
-  const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    // Update temporary message with new value
-    setTempMessage(e.target.value)
   }
 
   // Form submission handler - called when user submits the contact form
@@ -423,42 +410,29 @@ export default function ContactPage() {
           >
             {/* Contact Form Container */}
             {/* Responsive positioning: Mobile: 6x3 (cols 1-6, rows 2-4), Tablet: 6x5 (cols 1-6, rows 1-5), Desktop: 6x6 (cols 1-6, rows 1-6) */}
-            <div className="col-span-6 row-span-3 col-start-1 row-start-2 sm:col-span-6 sm:row-span-3 sm:col-start-1 sm:row-start-2 md:col-span-6 md:row-span-5 lg:row-span-6 md:col-start-1 md:row-start-1 lg:row-start-1 rounded-2xl md:rounded-3xl border-2 p-3 md:p-6 lg:p-8 flex flex-col z-10 group hover:border-transparent transition-all duration-300 hover:bg-opacity-80 relative backdrop-blur-sm bg-[#0F0F0F]/80 border-purple-500/20">
+            <div className="col-span-6 row-span-3 col-start-1 row-start-2 sm:col-span-6 sm:row-span-3 sm:col-start-1 sm:row-start-2 md:col-span-6 md:row-span-5 lg:row-span-6 md:col-start-1 md:row-start-1 lg:row-start-1 rounded-2xl md:rounded-3xl border-2 p-3 md:p-4 lg:p-8 flex flex-col z-10 group hover:border-transparent transition-all duration-300 hover:bg-opacity-80 relative backdrop-blur-sm bg-[#0F0F0F]/80 border-purple-500/20">
               {/* Form Header Section - Only visible on medium screens and larger */}
               <div className="hidden md:block">
-                {/* Main heading for the contact form */}
-                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2 md:mb-4 text-white">
-                  Let&apos;s Collaborate
-                </h2>
-                {/* Subtitle explaining the purpose of the form */}
-                <p className="text-[11px] md:text-sm lg:text-base text-white/60 mb-4 md:mb-6">
-                  Have an idea? Want to work together? Drop me a message!
-                </p>
-              </div>
+                {/* Header with title and submit button for tablet */}
+                <div className="flex items-center justify-between mb-2 md:mb-4">
+                  {/* Main heading for the contact form */}
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                    Let&apos;s Collaborate
+                  </h2>
 
-              {/* Contact Form Element */}
-              <form
-                onSubmit={handleSubmit} // Handle form submission
-                className="flex-1 flex flex-col gap-3 md:gap-4" // Full height with vertical spacing
-              >
-                {/* Error Message Display - Only show errors, success is shown on button */}
-                {/* {submitStatus.type === "error" && (
-                  <div className="p-3 rounded-xl text-sm font-medium bg-red-500/20 border border-red-400/40 text-red-400">
-                    {submitStatus.message}
-                  </div>
-                )} */}
-
-                {/* Mobile Form Layout - Only visible on mobile devices (hidden on md and larger) */}
-                {/* Uses a 6 column x 3 row grid for compact mobile layout */}
-                <div className="md:hidden grid grid-cols-6 grid-rows-3 gap-2 h-full">
-                  {/* Submit Button - Positioned in top-right corner (6th column, 1st row) */}
-                  <div className="col-start-6 row-start-1 flex items-center justify-center">
+                  {/* Submit Button for Tablet - Only visible on md screens */}
+                  <div className="md:block lg:hidden">
                     <button
-                      type="submit" // Submit the form when clicked
+                      type="button" // Change to button type since it's outside form
+                      onClick={() =>
+                        handleSubmit({
+                          preventDefault: () => {},
+                        } as React.FormEvent<HTMLFormElement>)
+                      } // Trigger form submission programmatically
                       disabled={
                         isSubmitting || (!isFormValid && !submitStatus.type)
                       } // Disable if submitting or form invalid (but allow when showing status)
-                      className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
+                      className={`px-6 py-2.5 rounded-xl border-2 text-xs font-semibold transition-all duration-300 ${
                         isSubmitting
                           ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Loading state
                           : submitStatus.type === "success"
@@ -470,15 +444,18 @@ export default function ContactPage() {
                                 : "bg-purple-500/20 border-purple-400/40 text-white hover:bg-purple-500/30 hover:border-purple-400/60" // Active state
                       }`}
                     >
-                      {/* Conditional button content based on form state */}
+                      {/* Conditional button content based on submission state */}
                       {isSubmitting ? (
-                        // Loading spinner when form is being submitted
-                        <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                        // Loading state with spinner and text
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                          Sending...
+                        </div>
                       ) : submitStatus.type === "success" ? (
-                        // Success checkmark icon with tooltip
-                        <div className="flex flex-col items-center">
+                        // Success state with checkmark and text
+                        <div className="flex items-center gap-1.5">
                           <svg
-                            className="w-5 h-5 text-green-400"
+                            className="w-3 h-3 text-green-400 flex-shrink-0"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -486,15 +463,15 @@ export default function ContactPage() {
                           >
                             <path d="M20 6L9 17l-5-5" />
                           </svg>
-                          <span className="text-xs text-green-400 mt-1 text-center">
-                            Check Mailbox!
+                          <span className="whitespace-nowrap">
+                            Check Mailbox
                           </span>
                         </div>
                       ) : submitStatus.type === "error" ? (
-                        // Error X icon with retry text
-                        <div className="flex flex-col items-center">
+                        // Error state with X icon and text
+                        <div className="flex items-center gap-1.5">
                           <svg
-                            className="w-5 h-5 text-red-400"
+                            className="w-3 h-3 text-red-400 flex-shrink-0"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -502,81 +479,188 @@ export default function ContactPage() {
                           >
                             <path d="M18 6L6 18M6 6l12 12" />
                           </svg>
-                          <span className="text-xs text-red-400 mt-1 text-center">
-                            Retry
+                          <span className="whitespace-nowrap">
+                            Invalid Email
                           </span>
                         </div>
                       ) : (
-                        // Default send arrow icon
-                        <svg
-                          className="w-5 h-5"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-                        </svg>
+                        // Default submit text
+                        "Send Message"
                       )}
-                    </button>
-                  </div>
-
-                  {/* Name Input Field - Spans 5 columns in the first row */}
-                  <div className="col-span-5 row-start-1 col-start-1 flex items-center justify-center">
-                    <div className="relative w-full">
-                      <input
-                        type="text" // Text input type
-                        id="name" // HTML id for accessibility
-                        name="name" // Form field name for data binding
-                        value={formData.name} // Controlled input value
-                        onChange={handleInputChange} // Handle input changes
-                        placeholder="Your name" // Placeholder text
-                        required // Required field validation
-                        minLength={2} // Minimum 2 characters
-                        maxLength={100} // Maximum 100 characters
-                        className={`w-full h-full px-3 py-4 rounded-lg bg-black/50 border text-white text-sm focus:outline-none transition-colors autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getInputBorderStyle()}`}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Email Input Field - Spans full width in the second row */}
-                  <div className="col-span-6 row-start-2 col-start-1 flex items-center justify-center">
-                    <div className="relative w-full">
-                      <input
-                        type="email" // Email input type for validation
-                        id="email" // HTML id for accessibility
-                        name="email" // Form field name for data binding
-                        value={formData.email} // Controlled input value
-                        onChange={handleInputChange} // Handle input changes
-                        placeholder="your.email@example.com" // Placeholder text
-                        required // Required field validation
-                        className={`w-full h-full px-3 py-4 rounded-lg bg-black/50 border text-white text-sm focus:outline-none transition-colors autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getInputBorderStyle()}`}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Message Button - Spans full width in the third row */}
-                  <div className="col-span-6 row-start-3 flex items-center">
-                    <button
-                      type="button" // Button type (not submit)
-                      onClick={openMessageModal} // Open message modal when clicked
-                      className={`w-full h-full py-4 px-3 rounded-lg border-2 text-sm font-medium transition-all duration-300 flex items-center justify-center ${
-                        formData.message.trim().length > 0
-                          ? "bg-green-500/20 border-green-400/40 text-green-400" // Green when message exists
-                          : "bg-purple-500/20 border-purple-400/40 text-white hover:bg-purple-500/30" // Purple when empty
-                      }`}
-                    >
-                      {/* Dynamic button text based on message state */}
-                      {formData.message.trim().length > 0
-                        ? "Edit Message" // Show &quot;Edit&quot; if message exists
-                        : "Write Message"}{" "}
-                      {/* Show "Write" if message is empty */}
                     </button>
                   </div>
                 </div>
 
+                {/* Subtitle explaining the purpose of the form */}
+                <p className="text-[11px] md:hidden lg:text-base text-white/60 mb-4 md:mb-6">
+                  Have an idea? Want to work together? Drop me a message!
+                </p>
+              </div>
+
+              {/* Contact Form Element */}
+              <form
+                onSubmit={handleSubmit} // Handle form submission
+                className="flex-1 flex flex-col gap-3 md:gap-3 lg:gap-4" // Full height with vertical spacing
+              >
+                {/* Error Message Display - Only show errors, success is shown on button */}
+                {/* {submitStatus.type === "error" && (
+                  <div className="p-3 rounded-xl text-sm font-medium bg-red-500/20 border border-red-400/40 text-red-400">
+                    {submitStatus.message}
+                  </div>
+                )} */}
+
+                {/* Mobile Form Layout - Only visible on mobile devices (hidden on md and larger) */}
+                <div className="md:hidden flex flex-1 flex-col gap-3">
+                  {/* Mobile Form Inputs Container */}
+                  <div className="grid grid-cols-1 gap-3">
+                    {/* Name Input Field and Submit Button Row for Mobile */}
+                    <div className="flex gap-2">
+                      {/* Name Input Field */}
+                      <div className="flex-1">
+                        <label
+                          htmlFor="name-mobile"
+                          className="block text-xs font-medium mb-1 text-white/80"
+                        >
+                          Name
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text" // Text input type
+                            id="name-mobile" // HTML id for label association
+                            name="name" // Form field name for data binding
+                            value={formData.name} // Controlled input value
+                            onChange={handleInputChange} // Handle input changes
+                            placeholder="Your name" // Placeholder text
+                            required // Required field validation
+                            minLength={2} // Minimum 2 characters
+                            maxLength={100} // Maximum 100 characters
+                            className={`w-full px-3 py-3 rounded-lg bg-black/50 border text-white text-sm focus:outline-none transition-colors autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getOtherInputBorderStyle()}`}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Submit Button */}
+                      <div className="flex flex-col justify-end">
+                        <button
+                          type="submit" // Submit the form when clicked
+                          disabled={
+                            isSubmitting || (!isFormValid && !submitStatus.type)
+                          } // Disable if submitting or form invalid (but allow when showing status)
+                          className={`w-16 h-12 rounded-lg border-2 text-xs font-semibold transition-all duration-300 flex items-center justify-center ${
+                            isSubmitting
+                              ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Loading state
+                              : submitStatus.type === "success"
+                                ? "bg-green-500/20 border-green-400/40 text-green-400" // Success state
+                                : submitStatus.type === "error"
+                                  ? "bg-red-500/20 border-red-400/40 text-red-400" // Error state
+                                  : !isFormValid
+                                    ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Disabled state
+                                    : "bg-purple-500/20 border-purple-400/40 text-white hover:bg-purple-500/30 hover:border-purple-400/60" // Active state
+                          }`}
+                        >
+                          {/* Conditional button content based on form state */}
+                          {isSubmitting ? (
+                            // Loading spinner
+                            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                          ) : submitStatus.type === "success" ? (
+                            // Success checkmark icon
+                            <svg
+                              className="w-4 h-4 text-green-400"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth={2}
+                            >
+                              <path d="M20 6L9 17l-5-5" />
+                            </svg>
+                          ) : submitStatus.type === "error" ? (
+                            // Error X icon
+                            <svg
+                              className="w-4 h-4 text-red-400"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth={2}
+                            >
+                              <path d="M18 6L6 18M6 6l12 12" />
+                            </svg>
+                          ) : (
+                            // Default send arrow icon
+                            <svg
+                              className="w-4 h-4"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth={2}
+                            >
+                              <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Email Input Field for Mobile */}
+                    <div>
+                      <label
+                        htmlFor="email-mobile"
+                        className="block text-xs font-medium mb-1 text-white/80"
+                      >
+                        Email
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="email" // Email input type for validation
+                          id="email-mobile" // HTML id for label association
+                          name="email" // Form field name for data binding
+                          value={formData.email} // Controlled input value
+                          onChange={handleInputChange} // Handle input changes
+                          placeholder={
+                            submitStatus.type === "error"
+                              ? "Invalid Email"
+                              : "your.email@example.com"
+                          } // Dynamic placeholder
+                          required // Required field validation
+                          className={`w-full px-3 py-3 rounded-lg bg-black/50 border text-white text-sm focus:outline-none transition-colors autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getEmailBorderStyle()}`}
+                        />
+                        {/* Error text overlay for mobile */}
+                        {submitStatus.type === "error" && (
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-red-500 rounded-lg">
+                            <span className="text-sm text-white font-semibold">
+                              Invalid Email | Retry
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Message Input Field for Mobile */}
+                  <div className="flex-1 flex flex-col">
+                    <label
+                      htmlFor="message-mobile"
+                      className="block text-xs font-medium mb-1 text-white/80"
+                    >
+                      Message
+                    </label>
+                    <div className="relative flex-1">
+                      <textarea
+                        id="message-mobile" // Unique id for mobile message field
+                        name="message" // Form field name for data binding
+                        value={formData.message} // Controlled input value
+                        onChange={handleInputChange} // Handle input changes
+                        placeholder="Share your ideas..." // Placeholder text
+                        required // Required field validation
+                        minLength={10} // Minimum 10 characters
+                        maxLength={2000} // Maximum 2000 characters
+                        className={`w-full h-full px-3 py-3 rounded-lg bg-black/50 border text-white text-sm focus:outline-none transition-colors resize-none overflow-y-auto autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getOtherInputBorderStyle()}`}
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 {/* Desktop Form Layout - Only visible on medium screens and larger */}
-                <div className="hidden md:flex flex-1 flex-col gap-4">
+                <div className="hidden md:flex flex-1 flex-col md:gap-3 lg:gap-4">
                   {/* Desktop Form Inputs Container */}
                   <div className="grid grid-cols-1 gap-4">
                     {/* Name Input Field for Desktop */}
@@ -599,7 +683,7 @@ export default function ContactPage() {
                           required // Required field validation
                           minLength={2} // Minimum 2 characters
                           maxLength={100} // Maximum 100 characters
-                          className={`w-full px-3 md:px-4 py-2 md:py-3 pr-10 rounded-xl md:rounded-2xl bg-black/50 border text-white text-[11px] md:text-sm focus:outline-none transition-colors autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getInputBorderStyle()}`}
+                          className={`w-full px-3 md:px-4 py-2 md:py-3 pr-10 rounded-xl md:rounded-2xl bg-black/50 border text-white text-[11px] md:text-sm focus:outline-none transition-colors autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getOtherInputBorderStyle()}`}
                         />
                       </div>
                     </div>
@@ -622,22 +706,22 @@ export default function ContactPage() {
                           onChange={handleInputChange} // Handle input changes
                           placeholder="your.email@example.com" // Placeholder text
                           required // Required field validation
-                          className={`w-full px-3 md:px-4 py-2 md:py-3 pr-10 rounded-xl md:rounded-2xl bg-black/50 border text-white text-[11px] md:text-sm focus:outline-none transition-colors autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getInputBorderStyle()}`}
+                          className={`w-full px-3 md:px-4 py-2 md:py-3 pr-10 rounded-xl md:rounded-2xl bg-black/50 border text-white text-[11px] md:text-sm focus:outline-none transition-colors autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getEmailBorderStyle()}`}
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Message Input Field for Desktop */}
-                  <div className="flex-1 flex flex-col">
+                  <div className="flex-1 flex flex-col min-h-0">
                     {/* Label for accessibility and user guidance */}
                     <label
                       htmlFor="message-desktop"
-                      className="block text-sm font-medium mb-2 text-white"
+                      className="block text-sm font-medium mb-2 text-white flex-shrink-0"
                     >
                       Message
                     </label>
-                    <div className="relative flex-1">
+                    <div className="relative flex-1 min-h-0">
                       <textarea
                         id="message-desktop" // Unique id for desktop message field
                         name="message" // Form field name for data binding
@@ -647,70 +731,71 @@ export default function ContactPage() {
                         required // Required field validation
                         minLength={10} // Minimum 10 characters
                         maxLength={2000} // Maximum 2000 characters
-                        rows={8} // Initial number of rows
-                        className={`w-full h-48 px-4 py-3 pr-10 rounded-2xl bg-black/50 border text-white text-sm focus:outline-none transition-colors resize-none autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getInputBorderStyle()}`}
+                        className={`w-full h-full min-h-[120px] max-h-[200px] px-4 py-3 pr-10 rounded-2xl bg-black/50 border text-white text-sm focus:outline-none transition-colors resize-none overflow-y-auto autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getOtherInputBorderStyle()}`}
                       />
                     </div>
                   </div>
 
-                  {/* Submit Button for Desktop */}
-                  <button
-                    type="submit" // Submit the form when clicked
-                    disabled={
-                      isSubmitting || (!isFormValid && !submitStatus.type)
-                    } // Disable if submitting or form invalid (but allow when showing status)
-                    className={`w-full py-3 rounded-2xl border-2 text-base font-semibold transition-all duration-300 ${
-                      isSubmitting
-                        ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Loading state
-                        : submitStatus.type === "success"
-                          ? "bg-green-500/20 border-green-400/40 text-green-400" // Success state
-                          : submitStatus.type === "error"
-                            ? "bg-red-500/20 border-red-400/40 text-red-400" // Error state
-                            : !isFormValid
-                              ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Disabled state
-                              : "bg-purple-500/20 border-purple-400/40 text-white hover:bg-purple-500/30 hover:border-purple-400/60" // Active state
-                    }`}
-                  >
-                    {/* Conditional button content based on submission state */}
-                    {isSubmitting ? (
-                      // Loading state with spinner and text
-                      <div className="flex items-center justify-center gap-2">
-                        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                        Sending...
-                      </div>
-                    ) : submitStatus.type === "success" ? (
-                      // Success state with checkmark and text
-                      <div className="flex items-center justify-center gap-2">
-                        <svg
-                          className="w-4 h-4 text-green-400"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path d="M20 6L9 17l-5-5" />
-                        </svg>
-                        Message Sent! Check your Mailbox
-                      </div>
-                    ) : submitStatus.type === "error" ? (
-                      // Error state with X icon and text
-                      <div className="flex items-center justify-center gap-2">
-                        <svg
-                          className="w-4 h-4 text-red-400"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path d="M18 6L6 18M6 6l12 12" />
-                        </svg>
-                        Enter Valid Email & Retry
-                      </div>
-                    ) : (
-                      // Default submit text
-                      "Send Message"
-                    )}
-                  </button>
+                  {/* Submit Button for Desktop - Only visible on large screens and up */}
+                  <div className="hidden lg:block">
+                    <button
+                      type="submit" // Submit the form when clicked
+                      disabled={
+                        isSubmitting || (!isFormValid && !submitStatus.type)
+                      } // Disable if submitting or form invalid (but allow when showing status)
+                      className={`w-full py-3 rounded-2xl border-2 text-base font-semibold transition-all duration-300 ${
+                        isSubmitting
+                          ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Loading state
+                          : submitStatus.type === "success"
+                            ? "bg-green-500/20 border-green-400/40 text-green-400" // Success state
+                            : submitStatus.type === "error"
+                              ? "bg-red-500/20 border-red-400/40 text-red-400" // Error state
+                              : !isFormValid
+                                ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Disabled state
+                                : "bg-purple-500/20 border-purple-400/40 text-white hover:bg-purple-500/30 hover:border-purple-400/60" // Active state
+                      }`}
+                    >
+                      {/* Conditional button content based on submission state */}
+                      {isSubmitting ? (
+                        // Loading state with spinner and text
+                        <div className="flex items-center justify-center gap-2">
+                          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                          Sending...
+                        </div>
+                      ) : submitStatus.type === "success" ? (
+                        // Success state with checkmark and text
+                        <div className="flex items-center justify-center gap-2">
+                          <svg
+                            className="w-4 h-4 text-green-400"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path d="M20 6L9 17l-5-5" />
+                          </svg>
+                          Message Sent! Check your Mailbox
+                        </div>
+                      ) : submitStatus.type === "error" ? (
+                        // Error state with X icon and text
+                        <div className="flex items-center justify-center gap-2">
+                          <svg
+                            className="w-4 h-4 text-red-400"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path d="M18 6L6 18M6 6l12 12" />
+                          </svg>
+                          Enter Valid Email & Retry
+                        </div>
+                      ) : (
+                        // Default submit text
+                        "Send Message"
+                      )}
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>
@@ -732,9 +817,9 @@ export default function ContactPage() {
                     : "bg-purple-500/10 hover:bg-purple-500/20" // Purple when not copied
                 }`}
               >
-                <div className="flex flex-col items-center justify-center flex-1 w-full">
+                <div className="flex flex-col md:flex-row lg:flex-col items-center justify-center flex-1 w-full gap-1 md:gap-2 lg:gap-0">
                   <svg
-                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-4 md:h-4 mb-0.5 sm:mb-1 flex-shrink-0"
+                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-4 md:h-4 mb-0.5 sm:mb-1 md:mb-0 lg:mb-1 flex-shrink-0"
                     viewBox="0 0 24 24"
                     fill="currentColor"
                   >
@@ -795,9 +880,9 @@ export default function ContactPage() {
                     : "bg-purple-500/10 hover:bg-purple-500/20"
                 }`}
               >
-                <div className="flex flex-col items-center justify-center flex-1 w-full">
+                <div className="flex flex-col md:flex-row lg:flex-col items-center justify-center flex-1 w-full gap-1 md:gap-2 lg:gap-0">
                   <svg
-                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-4 md:h-4 mb-0.5 sm:mb-1 flex-shrink-0"
+                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-4 md:h-4 mb-0.5 sm:mb-1 md:mb-0 lg:mb-1 flex-shrink-0"
                     viewBox="0 0 24 24"
                     fill="currentColor"
                   >
@@ -863,9 +948,9 @@ export default function ContactPage() {
                     : "bg-purple-500/10 hover:bg-purple-500/20"
                 }`}
               >
-                <div className="flex flex-col items-center justify-center flex-1 w-full">
+                <div className="flex flex-col md:flex-row lg:flex-col items-center justify-center flex-1 w-full gap-1 md:gap-2 lg:gap-0">
                   <svg
-                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-4 md:h-4 mb-0.5 sm:mb-1 flex-shrink-0"
+                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-4 md:h-4 mb-0.5 sm:mb-1 md:mb-0 lg:mb-1 flex-shrink-0"
                     viewBox="0 0 24 24"
                     fill="currentColor"
                   >
@@ -925,9 +1010,9 @@ export default function ContactPage() {
                     : "bg-purple-500/10 hover:bg-purple-500/20"
                 }`}
               >
-                <div className="flex flex-col items-center justify-center flex-1 w-full">
+                <div className="flex flex-col md:flex-row lg:flex-col items-center justify-center flex-1 w-full gap-1 md:gap-2 lg:gap-0">
                   <svg
-                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-4 md:h-4 mb-0.5 sm:mb-1 flex-shrink-0"
+                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-4 md:h-4 mb-0.5 sm:mb-1 md:mb-0 lg:mb-1 flex-shrink-0"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -1000,9 +1085,9 @@ export default function ContactPage() {
                     : "bg-purple-500/10 hover:bg-purple-500/20"
                 }`}
               >
-                <div className="flex flex-col items-center justify-center flex-1 w-full">
+                <div className="flex flex-col md:flex-row lg:flex-col items-center justify-center flex-1 w-full gap-1 md:gap-2 lg:gap-0">
                   <svg
-                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-4 md:h-4 mb-0.5 sm:mb-1 flex-shrink-0"
+                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-4 md:h-4 mb-0.5 sm:mb-1 md:mb-0 lg:mb-1 flex-shrink-0"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -1106,61 +1191,6 @@ export default function ContactPage() {
             </div>
           </div>
         </main>
-
-        {/* Message Modal for Mobile Devices */}
-        {/* This modal appears when user clicks "Write Message" on mobile */}
-        {isMessageModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Blurred Background Overlay */}
-            <div
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-              onClick={closeMessageModal} // Close modal when background is clicked
-            />
-
-            {/* Modal Content Container */}
-            <div className="relative w-full max-w-2xl bg-[#0F0F0F]/95 border border-purple-500/20 rounded-2xl p-6">
-              {/* Modal Header with Title and Close Button */}
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">
-                  Write Message
-                </h3>
-                <button
-                  onClick={closeMessageModal} // Close modal when X is clicked
-                  className="w-8 h-8 rounded-full bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-white hover:bg-purple-500/30 transition-colors"
-                >
-                  {/* Close (X) Icon */}
-                  <svg
-                    className="w-4 h-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path d="M18 6L6 18M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Message Input Textarea */}
-              <textarea
-                value={tempMessage} // Controlled by temporary message state
-                onChange={handleMessageChange} // Handle text changes
-                placeholder="Share your ideas..." // Placeholder text
-                className={`w-full h-64 px-4 py-3 rounded-xl bg-black/50 border text-white text-sm focus:outline-none transition-colors resize-none autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getInputBorderStyle()}`}
-              />
-
-              {/* Modal Footer with Done Button */}
-              <div className="flex justify-end mt-4">
-                <button
-                  onClick={closeMessageModal} // Close modal and save message
-                  className="px-6 py-2 bg-purple-500/20 border border-purple-400/40 text-white rounded-xl hover:bg-purple-500/30 transition-colors"
-                >
-                  Done
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </>
   )
