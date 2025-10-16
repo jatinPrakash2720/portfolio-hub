@@ -201,7 +201,7 @@ export default function PortfolioPage() {
     setProjectsLoading(true)
 
     // Small delay to show the loading state
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    // await new Promise((resolve) => setTimeout(resolve, 100))
 
     // Construct URL with query parameters
     const githubReposParam = (userData?.githubRepos || []).join(",")
@@ -218,7 +218,7 @@ export default function PortfolioPage() {
     setContactLoading(true)
 
     // Small delay to show the loading state
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    // await new Promise((resolve) => setTimeout(resolve, 100))
 
     router.push("/contact")
   }

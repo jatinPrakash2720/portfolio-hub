@@ -1,190 +1,327 @@
+// This directive tells Next.js that this component should run on the client side
+// Client components can use browser APIs, event handlers, and state
 "use client"
 
+// Import React hooks for managing component state and side effects
+// useState: manages local component state (form data, UI states, etc.)
+// useEffect: handles side effects like API calls, subscriptions, cleanup
+// lazy: enables code splitting by loading components only when needed
+// Suspense: provides fallback UI while lazy components are loading
 import { useState, useEffect, lazy, Suspense } from "react"
-import { ApiResponse } from "@/types/ApiResponse"
-import { useUserDataContext } from "@/contexts/UserDataContext"
-import { useRouter } from "next/navigation"
-import { useEmailValidation } from "@/hooks/useEmailValidation"
 
-// Lazy load UI components
+// Import the ApiResponse type definition for type safety
+// This ensures the API response structure is consistent
+import { ApiResponse } from "@/types/ApiResponse"
+
+// Import the custom context hook to access global user data
+// This provides user information across the entire application
+import { useUserDataContext } from "@/contexts/UserDataContext"
+
+// Import Next.js router for programmatic navigation
+// Allows us to navigate to different pages without full page reload
+import { useRouter } from "next/navigation"
+
+// Lazy load the PixelBlast component to improve initial page load performance
+// The component will only be loaded when it's actually rendered
+// This reduces the initial bundle size and improves loading speed
 const PixelBlast = lazy(() => import("../ui/PixelBlast"))
 
+// Main ContactPage component - this is the default export
+// This component handles the contact form and social media links
 export default function ContactPage() {
+  // Destructure values from the UserDataContext
+  // userData: contains user information like name, email, social links
+  // setContactLoading: function to update loading state for contact page
+  // setIntroLoading: function to update loading state for intro page
+  // setProjectsLoading: function to update loading state for projects page
   const { userData, setContactLoading, setIntroLoading, setProjectsLoading } =
     useUserDataContext()
+
+  // Initialize Next.js router for navigation
+  // This allows us to programmatically navigate to other pages
   const router = useRouter()
+
+  // State to track which social media item was copied to clipboard
+  // null means nothing is copied, string value indicates which item was copied
   const [copiedItem, setCopiedItem] = useState<string | null>(null)
+
+  // State to track if user is navigating to intro page
+  // Used to show loading spinner during navigation
   const [isNavigatingToIntro, setIsNavigatingToIntro] = useState(false)
+
+  // State to track if user is navigating to projects page
+  // Used to show loading spinner during navigation
   const [isNavigatingToProjects, setIsNavigatingToProjects] = useState(false)
 
-  // Form state
+  // Form state object containing all form input values
+  // name: user's name input
+  // email: user's email input
+  // message: user's message input
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     message: "",
   })
 
-  // UI state
+  // UI state for form submission
+  // isSubmitting: boolean to track if form is currently being submitted
+  // submitStatus: object containing submission result (success/error) and message
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<{
-    type: "success" | "error" | null
-    message: string
+    type: "success" | "error" | null // Type of status: success, error, or none
+    message: string // Status message to display to user
   }>({ type: null, message: "" })
 
-  // Message modal state
+  // Message modal state for mobile devices
+  // isMessageModalOpen: controls visibility of the message input modal
+  // tempMessage: temporary storage for message content while modal is open
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false)
   const [tempMessage, setTempMessage] = useState("")
 
-  // Email validation with debounce
-  const { email, validationState, handleEmailChange, resetValidation } =
-    useEmailValidation(500)
-
-  // Check if form is valid for submission
+  // Computed property to check if form is valid for submission
+  // Checks that all required fields have content (after trimming whitespace)
+  // name must have at least 1 character
+  // email must have at least 1 character
+  // message must have at least 1 character
   const isFormValid =
     formData.name.trim().length > 0 &&
     formData.message.trim().length > 0 &&
-    validationState.isValid === true &&
-    !validationState.isChecking
+    formData.email.trim().length > 0
 
-  // Clear contact loading state when component mounts
+  // Helper function to get input border styling based on submit status
+  const getInputBorderStyle = () => {
+    if (submitStatus.type === "success") {
+      return "border-green-500/70 focus:border-green-500/90"
+    } else if (submitStatus.type === "error") {
+      return "border-red-500/70 focus:border-red-500/90"
+    } else {
+      return "border-purple-500/20 focus:border-purple-500/50"
+    }
+  }
+
+  // Effect hook that runs when component mounts
+  // Clears the contact loading state to indicate this page has finished loading
+  // setContactLoading is in the dependency array to ensure it's stable
   useEffect(() => {
     setContactLoading(false)
   }, [setContactLoading])
 
-  // Navigation handlers
+  // Navigation handler for intro page
+  // This function is called when user clicks the Profile button
   const handleIntroNavigation = async () => {
+    // Set loading state to true to show spinner
     setIsNavigatingToIntro(true)
+    // Set intro page loading state to true
     setIntroLoading(true)
 
-    // Small delay to show the loading state
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    // Small delay to show the loading state to user
+    // This creates a better UX by showing the loading animation
+    // await new Promise((resolve) => setTimeout(resolve, 100))
 
+    // Navigate to the intro page using Next.js router
     router.push("/intro")
   }
 
+  // Navigation handler for projects page
+  // This function is called when user clicks the Projects button
   const handleProjectsNavigation = async () => {
+    // Set loading state to true to show spinner
     setIsNavigatingToProjects(true)
+    // Set projects page loading state to true
     setProjectsLoading(true)
 
-    // Small delay to show the loading state
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    // Small delay to show the loading state to user
+    // This creates a better UX by showing the loading animation
+    // await new Promise((resolve) => setTimeout(resolve, 100))
 
-    // Construct URL with query parameters
+    // Construct URL with query parameters for GitHub repositories
+    // Get GitHub repos from userData or use empty array as fallback
     const githubReposParam = (userData?.githubRepos || []).join(",")
+    // Create URL with GitHub repos as query parameter if they exist
     const url = githubReposParam
       ? `/projects?githubRepos=${encodeURIComponent(githubReposParam)}`
       : "/projects"
 
+    // Navigate to the projects page with the constructed URL
     router.push(url)
   }
 
+  // Function to copy text to clipboard
+  // This is used for social media links and contact information
   const handleCopy = async (text: string, itemName: string) => {
     try {
+      // Use the modern Clipboard API to copy text
       await navigator.clipboard.writeText(text)
+      // Set the copied item to show success feedback
       setCopiedItem(itemName)
-      setTimeout(() => setCopiedItem(null), 2000) // Reset after 2 seconds
+      // Reset the copied state after 2 seconds
+      setTimeout(() => setCopiedItem(null), 500) // Reset after 2 seconds
     } catch (err) {
+      // Log error if clipboard operation fails
       console.error("Failed to copy: ", err)
     }
   }
 
+  // Generic input change handler for all form inputs
+  // This function updates the form data when user types in any input field
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    // Extract the input name and value from the event
     const { name, value } = e.target
+    // Update form data using functional update to ensure we get latest state
     setFormData((prev) => ({
-      ...prev,
-      [name]: value,
+      ...prev, // Spread existing form data
+      [name]: value, // Update the specific field that changed
     }))
-
-    // Handle email validation with debounce
-    if (name === "email") {
-      handleEmailChange(value)
-    }
   }
 
-  // Message modal handlers
+  // Message modal handlers for mobile devices
+  // Opens the message input modal and copies current message to temp storage
   const openMessageModal = () => {
+    // Copy current message to temporary storage
     setTempMessage(formData.message)
+    // Show the modal
     setIsMessageModalOpen(true)
   }
 
+  // Closes the message modal and saves the temporary message back to form data
   const closeMessageModal = () => {
+    // Update form data with the temporary message content
     setFormData((prev) => ({
-      ...prev,
-      message: tempMessage,
+      ...prev, // Keep existing form data
+      message: tempMessage, // Update message with temp content
     }))
+    // Hide the modal
     setIsMessageModalOpen(false)
   }
 
+  // Handles changes in the message modal textarea
+  // Updates the temporary message state as user types
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // Update temporary message with new value
     setTempMessage(e.target.value)
   }
 
+  // Form submission handler - called when user submits the contact form
+  // This function handles the entire form submission process including API calls
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    // Prevent the default form submission behavior (page reload)
     e.preventDefault()
+    // Set submitting state to true to show loading spinner
     setIsSubmitting(true)
+    // Clear any previous status messages
     setSubmitStatus({ type: null, message: "" })
 
     try {
+      // Log form data for debugging purposes
+      console.log("Submitting form with data:", {
+        ...formData, // Spread the form data (name, email, message)
+        userId: userData?.username || "jatin", // Get username from context or use default
+        adminEmail: userData?.email || "jatin.prakash.2720@gmail.com", // Get admin email or use default
+      })
+
+      // Make API call to the contact endpoint
       const response = await fetch("/api/contact", {
-        method: "POST",
+        method: "POST", // Use POST method for form submission
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json", // Specify JSON content type
         },
         body: JSON.stringify({
-          ...formData,
+          // Convert data to JSON string
+          ...formData, // Include all form fields
           userId: userData?.username || "jatin", // Dynamic based on portfolio owner
           adminEmail: userData?.email || "jatin.prakash.2720@gmail.com", // Dynamic admin email
         }),
       })
+      console.log("Response:", response)
+      // Log response details for debugging
+      console.log("Response status:", response.status)
+      console.log("Response ok:", response.ok)
 
+      // Check if the response was successful (status 200-299)
+      // if (!response.ok) {
+      //   throw new Error(`HTTP error! status: ${response.status}`)
+      // }
+
+      // Parse the JSON response from the API
       const result: ApiResponse = await response.json()
+      console.log("Response result:", result)
 
+      // Check if the API call was successful
       if (result.success) {
+        // Reset form to empty state
+        setFormData({ name: "", email: "", message: "" })
+
+        // Show success state on button (no popup notification)
         setSubmitStatus({
           type: "success",
           message:
             "Message sent successfully! Check your email for confirmation.",
         })
-        // Reset form
-        setFormData({ name: "", email: "", message: "" })
-        resetValidation()
 
         // Reset success state after 3 seconds
         setTimeout(() => {
           setSubmitStatus({ type: null, message: "" })
-        }, 3000)
+        }, 2000)
       } else {
+        // Show error message from API response
         setSubmitStatus({
           type: "error",
           message:
             result.message || "Failed to send message. Please try again.",
         })
 
-        // Reset error state after 3 seconds
+        // Reset error state after 5 seconds to hide the message
         setTimeout(() => {
           setSubmitStatus({ type: null, message: "" })
-        }, 3000)
+        }, 2000)
       }
     } catch (error) {
+      // Log the error for debugging
       console.error("Error submitting form:", error)
+
+      // Default error message for network issues
+      let errorMessage =
+        "Network error. Please check your connection and try again."
+
+      // Check if error is an Error instance to provide specific error messages
+      if (error instanceof Error) {
+        if (error.message.includes("Failed to fetch")) {
+          // Specific message for network connectivity issues
+          errorMessage =
+            "Cannot connect to server. Please check your internet connection."
+        } else if (error.message.includes("HTTP error")) {
+          // Specific message for server errors
+          errorMessage = "Server error. Please try again later."
+        } else {
+          // Use the actual error message
+          errorMessage = error.message
+        }
+      }
+
+      // Show error message to user
       setSubmitStatus({
         type: "error",
-        message: "Network error. Please check your connection and try again.",
+        message: errorMessage,
       })
 
-      // Reset error state after 3 seconds
+      // Reset error state after 5 seconds to hide the message
       setTimeout(() => {
         setSubmitStatus({ type: null, message: "" })
-      }, 3000)
+      }, 2000)
     } finally {
+      // Always set submitting to false, regardless of success or failure
       setIsSubmitting(false)
     }
   }
+  // Return the JSX that renders the contact page
   return (
     <>
+      {/* Inline styles for webkit autofill customization */}
+      {/* This ensures autofilled form fields maintain the dark theme */}
       <style jsx>{`
+        /* Target all autofill states for input and textarea elements */
         input:-webkit-autofill,
         input:-webkit-autofill:hover,
         input:-webkit-autofill:focus,
@@ -193,117 +330,184 @@ export default function ContactPage() {
         textarea:-webkit-autofill:hover,
         textarea:-webkit-autofill:focus,
         textarea:-webkit-autofill:active {
+          /* Override browser's default yellow autofill background */
           -webkit-box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5) inset !important;
+          /* Set text color to white for visibility */
           -webkit-text-fill-color: white !important;
+          /* Set background to semi-transparent black */
           background-color: rgba(0, 0, 0, 0.5) !important;
+          /* Prevent background color changes during autofill */
           transition: background-color 5000s ease-in-out 0s;
         }
 
+        /* Ensure non-autofilled inputs also have dark background */
         input:not(:-webkit-autofill),
         textarea:not(:-webkit-autofill) {
           background-color: rgba(0, 0, 0, 0.5) !important;
         }
+
+        /* Fix text color when browser validation indicators appear */
+        input:invalid,
+        input:invalid:focus,
+        input:invalid:hover,
+        input:invalid:active,
+        textarea:invalid,
+        textarea:invalid:focus,
+        textarea:invalid:hover,
+        textarea:invalid:active {
+          color: white !important;
+          -webkit-text-fill-color: white !important;
+        }
+
+        /* Specifically target email inputs with validation */
+        input[type="email"]:invalid,
+        input[type="email"]:invalid:focus,
+        input[type="email"]:invalid:hover,
+        input[type="email"]:invalid:active {
+          color: white !important;
+          -webkit-text-fill-color: white !important;
+        }
+
+        /* Override any browser default validation styling */
+        input:user-invalid,
+        input:user-invalid:focus,
+        textarea:user-invalid,
+        textarea:user-invalid:focus {
+          color: white !important;
+          -webkit-text-fill-color: white !important;
+        }
       `}</style>
+
+      {/* Main container div - full screen height with dark theme */}
       <div className="h-screen flex relative transition-colors duration-300 bg-black text-white">
+        {/* Background animation layer - positioned absolutely behind content */}
         <div className="absolute inset-0 z-0 pointer-events-none">
+          {/* Suspense wrapper for lazy-loaded PixelBlast component */}
           <Suspense fallback={null}>
+            {/* PixelBlast component creates animated background effect */}
             <PixelBlast
-              variant="circle"
-              pixelSize={4}
-              color="#A855F7"
-              patternScale={2}
-              patternDensity={0.8}
-              pixelSizeJitter={0.3}
-              enableRipples={false}
-              liquid={false}
-              speed={0.3}
-              edgeFade={0.15}
-              transparent
+              variant="circle" // Use circular pattern
+              pixelSize={4} // Size of individual pixels
+              color="#A855F7" // Purple color for pixels
+              patternScale={2} // Scale of the pattern
+              patternDensity={0.8} // How dense the pattern is
+              pixelSizeJitter={0.3} // Random variation in pixel size
+              enableRipples={false} // Disable ripple effects
+              liquid={false} // Disable liquid animation
+              speed={0.3} // Animation speed
+              edgeFade={0.15} // Fade effect at edges
+              transparent // Make background transparent
             />
           </Suspense>
         </div>
+
+        {/* Additional background overlay for depth */}
         <div className="absolute inset-0 z-0 pointer-events-none transition-colors duration-300 bg-purple-900/10" />
 
+        {/* Main content area - positioned above background layers */}
         <main
           className="relative z-10 w-screen overflow-hidden p-1"
-          style={{ height: "100dvh" }}
+          style={{ height: "100dvh" }} // Use dynamic viewport height for mobile compatibility
         >
-          {/* Mobile: 6x6 Grid, Tablet: 8x5, Desktop: 8x6 Grid */}
+          {/* Responsive grid layout for different screen sizes */}
+          {/* Mobile: 6 columns x 5 rows, Tablet: 8 columns x 5 rows, Desktop: 8 columns x 6 rows */}
           <div
             className="relative grid grid-cols-6 grid-rows-5 sm:grid-cols-6 sm:grid-rows-5 md:grid-cols-8 md:grid-rows-5 lg:grid-rows-6 p-2"
             style={{
-              gap: "10px",
-              padding: "6px",
-              width: "100%",
-              height: "100%",
-              boxSizing: "border-box",
+              gap: "10px", // Space between grid items
+              padding: "6px", // Inner padding of the grid container
+              width: "100%", // Full width of the container
+              height: "100%", // Full height of the container
+              boxSizing: "border-box", // Include padding in width/height calculations
             }}
           >
-            {/* Contact Form - Mobile: 6x5, Tablet: 6x5, Desktop: 6x6 */}
+            {/* Contact Form Container */}
+            {/* Responsive positioning: Mobile: 6x3 (cols 1-6, rows 2-4), Tablet: 6x5 (cols 1-6, rows 1-5), Desktop: 6x6 (cols 1-6, rows 1-6) */}
             <div className="col-span-6 row-span-3 col-start-1 row-start-2 sm:col-span-6 sm:row-span-3 sm:col-start-1 sm:row-start-2 md:col-span-6 md:row-span-5 lg:row-span-6 md:col-start-1 md:row-start-1 lg:row-start-1 rounded-2xl md:rounded-3xl border-2 p-3 md:p-6 lg:p-8 flex flex-col z-10 group hover:border-transparent transition-all duration-300 hover:bg-opacity-80 relative backdrop-blur-sm bg-[#0F0F0F]/80 border-purple-500/20">
-              {/* Header - Hidden on small screens */}
+              {/* Form Header Section - Only visible on medium screens and larger */}
               <div className="hidden md:block">
+                {/* Main heading for the contact form */}
                 <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2 md:mb-4 text-white">
                   Let&apos;s Collaborate
                 </h2>
+                {/* Subtitle explaining the purpose of the form */}
                 <p className="text-[11px] md:text-sm lg:text-base text-white/60 mb-4 md:mb-6">
                   Have an idea? Want to work together? Drop me a message!
                 </p>
               </div>
 
+              {/* Contact Form Element */}
               <form
-                onSubmit={handleSubmit}
-                className="flex-1 flex flex-col gap-3 md:gap-4"
+                onSubmit={handleSubmit} // Handle form submission
+                className="flex-1 flex flex-col gap-3 md:gap-4" // Full height with vertical spacing
               >
-                {/* Status Message */}
-                {submitStatus.type && (
-                  <div
-                    className={`p-3 rounded-xl text-sm font-medium ${
-                      submitStatus.type === "success"
-                        ? "bg-green-500/20 border border-green-400/40 text-green-400"
-                        : "bg-red-500/20 border border-red-400/40 text-red-400"
-                    }`}
-                  >
+                {/* Error Message Display - Only show errors, success is shown on button */}
+                {/* {submitStatus.type === "error" && (
+                  <div className="p-3 rounded-xl text-sm font-medium bg-red-500/20 border border-red-400/40 text-red-400">
                     {submitStatus.message}
                   </div>
-                )}
+                )} */}
 
-                {/* Mobile Grid Layout - 6 cols x 3 rows */}
+                {/* Mobile Form Layout - Only visible on mobile devices (hidden on md and larger) */}
+                {/* Uses a 6 column x 3 row grid for compact mobile layout */}
                 <div className="md:hidden grid grid-cols-6 grid-rows-3 gap-2 h-full">
-                  {/* Row 1: Send Icon - 6th column */}
+                  {/* Submit Button - Positioned in top-right corner (6th column, 1st row) */}
                   <div className="col-start-6 row-start-1 flex items-center justify-center">
                     <button
-                      type="submit"
-                      disabled={isSubmitting || !isFormValid}
+                      type="submit" // Submit the form when clicked
+                      disabled={
+                        isSubmitting || (!isFormValid && !submitStatus.type)
+                      } // Disable if submitting or form invalid (but allow when showing status)
                       className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
-                        isSubmitting || !isFormValid
-                          ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed"
-                          : "bg-purple-500/20 border-purple-400/40 text-white hover:bg-purple-500/30 hover:border-purple-400/60"
+                        isSubmitting
+                          ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Loading state
+                          : submitStatus.type === "success"
+                          ? "bg-green-500/20 border-green-400/40 text-green-400" // Success state
+                          : submitStatus.type === "error"
+                          ? "bg-red-500/20 border-red-400/40 text-red-400" // Error state
+                          : !isFormValid
+                          ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Disabled state
+                          : "bg-purple-500/20 border-purple-400/40 text-white hover:bg-purple-500/30 hover:border-purple-400/60" // Active state
                       }`}
                     >
+                      {/* Conditional button content based on form state */}
                       {isSubmitting ? (
+                        // Loading spinner when form is being submitted
                         <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
                       ) : submitStatus.type === "success" ? (
-                        <svg
-                          className="w-5 h-5 text-green-400"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path d="M20 6L9 17l-5-5" />
-                        </svg>
+                        // Success checkmark icon with tooltip
+                        <div className="flex flex-col items-center">
+                          <svg
+                            className="w-5 h-5 text-green-400"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path d="M20 6L9 17l-5-5" />
+                          </svg>
+                          <span className="text-xs text-green-400 mt-1 text-center">
+                            Check Mailbox!
+                          </span>
+                        </div>
                       ) : submitStatus.type === "error" ? (
-                        <svg
-                          className="w-5 h-5 text-red-400"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path d="M18 6L6 18M6 6l12 12" />
-                        </svg>
+                        // Error X icon with retry text
+                        <div className="flex flex-col items-center">
+                          <svg
+                            className="w-5 h-5 text-red-400"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path d="M18 6L6 18M6 6l12 12" />
+                          </svg>
+                          <span className="text-xs text-red-400 mt-1 text-center">
+                            Retry
+                          </span>
+                        </div>
                       ) : (
+                        // Default send arrow icon
                         <svg
                           className="w-5 h-5"
                           viewBox="0 0 24 24"
@@ -317,129 +521,67 @@ export default function ContactPage() {
                     </button>
                   </div>
 
-                  {/* Row 2: Name (cols 1-2) and Email (cols 3-4) */}
-                  {/* Name Input - cols 1-2 */}
+                  {/* Name Input Field - Spans 5 columns in the first row */}
                   <div className="col-span-5 row-start-1 col-start-1 flex items-center justify-center">
                     <div className="relative w-full">
                       <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        placeholder="Your name"
-                        required
-                        minLength={2}
-                        maxLength={100}
-                        className={`w-full h-full px-3 py-4 rounded-lg bg-black/50 border text-white text-sm focus:outline-none transition-colors autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${
-                          formData.name.trim().length > 0
-                            ? "border-green-500/50 focus:border-green-500/70"
-                            : "border-purple-500/20 focus:border-purple-500/50"
-                        }`}
+                        type="text" // Text input type
+                        id="name" // HTML id for accessibility
+                        name="name" // Form field name for data binding
+                        value={formData.name} // Controlled input value
+                        onChange={handleInputChange} // Handle input changes
+                        placeholder="Your name" // Placeholder text
+                        required // Required field validation
+                        minLength={2} // Minimum 2 characters
+                        maxLength={100} // Maximum 100 characters
+                        className={`w-full h-full px-3 py-4 rounded-lg bg-black/50 border text-white text-sm focus:outline-none transition-colors autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getInputBorderStyle()}`}
                       />
-                      {/* Name validation indicator */}
-                      {formData.name.trim().length > 0 && (
-                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                          <svg
-                            className="w-3 h-3 text-green-400"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                          >
-                            <path d="M20 6L9 17l-5-5" />
-                          </svg>
-                        </div>
-                      )}
                     </div>
                   </div>
 
-                  {/* Email Input - cols 3-4 */}
+                  {/* Email Input Field - Spans full width in the second row */}
                   <div className="col-span-6 row-start-2 col-start-1 flex items-center justify-center">
                     <div className="relative w-full">
                       <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        placeholder="your.email@example.com"
-                        required
-                        className={`w-full h-full px-3 py-4 pr-8 rounded-lg bg-black/50 border text-white text-sm focus:outline-none transition-colors autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${
-                          validationState.isValid === true
-                            ? "border-green-500/50 focus:border-green-500/70"
-                            : validationState.isValid === false
-                            ? "border-red-500/50 focus:border-red-500/70"
-                            : "border-purple-500/20 focus:border-purple-500/50"
-                        }`}
+                        type="email" // Email input type for validation
+                        id="email" // HTML id for accessibility
+                        name="email" // Form field name for data binding
+                        value={formData.email} // Controlled input value
+                        onChange={handleInputChange} // Handle input changes
+                        placeholder="your.email@example.com" // Placeholder text
+                        required // Required field validation
+                        className={`w-full h-full px-3 py-4 rounded-lg bg-black/50 border text-white text-sm focus:outline-none transition-colors autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getInputBorderStyle()}`}
                       />
-                      {/* Loading spinner and validation status indicator */}
-                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                        {validationState.isChecking ? (
-                          <div className="w-3 h-3 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
-                        ) : validationState.isValid === true ? (
-                          <svg
-                            className="w-3 h-3 text-green-400"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                          >
-                            <path d="M20 6L9 17l-5-5" />
-                          </svg>
-                        ) : validationState.isValid === false ? (
-                          <svg
-                            className="w-3 h-3 text-red-400"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                          >
-                            <path d="M18 6L6 18M6 6l12 12" />
-                          </svg>
-                        ) : null}
-                      </div>
                     </div>
-                    {/* Validation message */}
-                    {validationState.message && (
-                      <div
-                        className={`mt-1 text-xs ${
-                          validationState.isValid === true
-                            ? "text-green-400"
-                            : validationState.isValid === false
-                            ? "text-red-400"
-                            : "text-purple-400"
-                        }`}
-                      >
-                        {validationState.message}
-                      </div>
-                    )}
                   </div>
 
-                  {/* Row 3: Write Message Button - full width */}
+                  {/* Message Button - Spans full width in the third row */}
                   <div className="col-span-6 row-start-3 flex items-center">
                     <button
-                      type="button"
-                      onClick={openMessageModal}
+                      type="button" // Button type (not submit)
+                      onClick={openMessageModal} // Open message modal when clicked
                       className={`w-full h-full py-4 px-3 rounded-lg border-2 text-sm font-medium transition-all duration-300 flex items-center justify-center ${
                         formData.message.trim().length > 0
-                          ? "bg-green-500/20 border-green-400/40 text-green-400"
-                          : "bg-purple-500/20 border-purple-400/40 text-white hover:bg-purple-500/30"
+                          ? "bg-green-500/20 border-green-400/40 text-green-400" // Green when message exists
+                          : "bg-purple-500/20 border-purple-400/40 text-white hover:bg-purple-500/30" // Purple when empty
                       }`}
                     >
+                      {/* Dynamic button text based on message state */}
                       {formData.message.trim().length > 0
-                        ? "Edit Message"
-                        : "Write Message"}
+                        ? "Edit Message" // Show "Edit" if message exists
+                        : "Write Message"}{" "}
+                      // Show "Write" if message is empty
                     </button>
                   </div>
                 </div>
 
-                {/* Desktop Layout - Hidden on mobile */}
+                {/* Desktop Form Layout - Only visible on medium screens and larger */}
                 <div className="hidden md:flex flex-1 flex-col gap-4">
-                  {/* Name and Email Inputs */}
+                  {/* Desktop Form Inputs Container */}
                   <div className="grid grid-cols-1 gap-4">
-                    {/* Name Input */}
+                    {/* Name Input Field for Desktop */}
                     <div>
+                      {/* Label for accessibility and user guidance */}
                       <label
                         htmlFor="name"
                         className="block text-[11px] md:text-sm font-medium mb-1 md:mb-2 text-white"
@@ -448,40 +590,23 @@ export default function ContactPage() {
                       </label>
                       <div className="relative">
                         <input
-                          type="text"
-                          id="name"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleInputChange}
-                          placeholder="Your name"
-                          required
-                          minLength={2}
-                          maxLength={100}
-                          className={`w-full px-3 md:px-4 py-2 md:py-3 pr-10 rounded-xl md:rounded-2xl bg-black/50 border text-white text-[11px] md:text-sm focus:outline-none transition-colors autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${
-                            formData.name.trim().length > 0
-                              ? "border-green-500/50 focus:border-green-500/70"
-                              : "border-purple-500/20 focus:border-purple-500/50"
-                          }`}
+                          type="text" // Text input type
+                          id="name" // HTML id for label association
+                          name="name" // Form field name for data binding
+                          value={formData.name} // Controlled input value
+                          onChange={handleInputChange} // Handle input changes
+                          placeholder="Your name" // Placeholder text
+                          required // Required field validation
+                          minLength={2} // Minimum 2 characters
+                          maxLength={100} // Maximum 100 characters
+                          className={`w-full px-3 md:px-4 py-2 md:py-3 pr-10 rounded-xl md:rounded-2xl bg-black/50 border text-white text-[11px] md:text-sm focus:outline-none transition-colors autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getInputBorderStyle()}`}
                         />
-                        {/* Name validation indicator */}
-                        {formData.name.trim().length > 0 && (
-                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                            <svg
-                              className="w-4 h-4 text-green-400"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                            >
-                              <path d="M20 6L9 17l-5-5" />
-                            </svg>
-                          </div>
-                        )}
                       </div>
                     </div>
 
-                    {/* Email Input */}
+                    {/* Email Input Field for Desktop */}
                     <div>
+                      {/* Label for accessibility and user guidance */}
                       <label
                         htmlFor="email"
                         className="block text-[11px] md:text-sm font-medium mb-1 md:mb-2 text-white"
@@ -490,67 +615,22 @@ export default function ContactPage() {
                       </label>
                       <div className="relative">
                         <input
-                          type="email"
-                          id="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          placeholder="your.email@example.com"
-                          required
-                          className={`w-full px-3 md:px-4 py-2 md:py-3 pr-12 md:pr-10 rounded-xl md:rounded-2xl bg-black/50 border text-white text-[11px] md:text-sm focus:outline-none transition-colors autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${
-                            validationState.isValid === true
-                              ? "border-green-500/50 focus:border-green-500/70"
-                              : validationState.isValid === false
-                              ? "border-red-500/50 focus:border-red-500/70"
-                              : "border-purple-500/20 focus:border-purple-500/50"
-                          }`}
+                          type="email" // Email input type for validation
+                          id="email" // HTML id for label association
+                          name="email" // Form field name for data binding
+                          value={formData.email} // Controlled input value
+                          onChange={handleInputChange} // Handle input changes
+                          placeholder="your.email@example.com" // Placeholder text
+                          required // Required field validation
+                          className={`w-full px-3 md:px-4 py-2 md:py-3 pr-10 rounded-xl md:rounded-2xl bg-black/50 border text-white text-[11px] md:text-sm focus:outline-none transition-colors autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getInputBorderStyle()}`}
                         />
-                        {/* Loading spinner and validation status indicator */}
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                          {validationState.isChecking ? (
-                            <div className="w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
-                          ) : validationState.isValid === true ? (
-                            <svg
-                              className="w-4 h-4 text-green-400"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                            >
-                              <path d="M20 6L9 17l-5-5" />
-                            </svg>
-                          ) : validationState.isValid === false ? (
-                            <svg
-                              className="w-4 h-4 text-red-400"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                            >
-                              <path d="M18 6L6 18M6 6l12 12" />
-                            </svg>
-                          ) : null}
-                        </div>
                       </div>
-                      {/* Validation message */}
-                      {validationState.message && (
-                        <div
-                          className={`mt-1 text-[10px] md:text-xs ${
-                            validationState.isValid === true
-                              ? "text-green-400"
-                              : validationState.isValid === false
-                              ? "text-red-400"
-                              : "text-purple-400"
-                          }`}
-                        >
-                          {validationState.message}
-                        </div>
-                      )}
                     </div>
                   </div>
 
-                  {/* Message Input - Desktop */}
+                  {/* Message Input Field for Desktop */}
                   <div className="flex-1 flex flex-col">
+                    {/* Label for accessibility and user guidance */}
                     <label
                       htmlFor="message-desktop"
                       className="block text-sm font-medium mb-2 text-white"
@@ -559,54 +639,75 @@ export default function ContactPage() {
                     </label>
                     <div className="relative flex-1">
                       <textarea
-                        id="message-desktop"
-                        name="message"
-                        value={formData.message}
-                        onChange={handleInputChange}
-                        placeholder="Share your ideas..."
-                        required
-                        minLength={10}
-                        maxLength={2000}
-                        rows={8}
-                        className={`w-full h-48 px-4 py-3 pr-10 rounded-2xl bg-black/50 border text-white text-sm focus:outline-none transition-colors resize-none autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${
-                          formData.message.trim().length > 0
-                            ? "border-green-500/50 focus:border-green-500/70"
-                            : "border-purple-500/20 focus:border-purple-500/50"
-                        }`}
+                        id="message-desktop" // Unique id for desktop message field
+                        name="message" // Form field name for data binding
+                        value={formData.message} // Controlled input value
+                        onChange={handleInputChange} // Handle input changes
+                        placeholder="Share your ideas..." // Placeholder text
+                        required // Required field validation
+                        minLength={10} // Minimum 10 characters
+                        maxLength={2000} // Maximum 2000 characters
+                        rows={8} // Initial number of rows
+                        className={`w-full h-48 px-4 py-3 pr-10 rounded-2xl bg-black/50 border text-white text-sm focus:outline-none transition-colors resize-none autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getInputBorderStyle()}`}
                       />
-                      {/* Message validation indicator */}
-                      {formData.message.trim().length > 0 && (
-                        <div className="absolute right-3 top-3">
-                          <svg
-                            className="w-4 h-4 text-green-400"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                          >
-                            <path d="M20 6L9 17l-5-5" />
-                          </svg>
-                        </div>
-                      )}
                     </div>
                   </div>
 
-                  {/* Submit Button - Desktop */}
+                  {/* Submit Button for Desktop */}
                   <button
-                    type="submit"
-                    disabled={isSubmitting || !isFormValid}
+                    type="submit" // Submit the form when clicked
+                    disabled={
+                      isSubmitting || (!isFormValid && !submitStatus.type)
+                    } // Disable if submitting or form invalid (but allow when showing status)
                     className={`w-full py-3 rounded-2xl border-2 text-base font-semibold transition-all duration-300 ${
-                      isSubmitting || !isFormValid
-                        ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed"
-                        : "bg-purple-500/20 border-purple-400/40 text-white hover:bg-purple-500/30 hover:border-purple-400/60"
+                      isSubmitting
+                        ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Loading state
+                        : submitStatus.type === "success"
+                        ? "bg-green-500/20 border-green-400/40 text-green-400" // Success state
+                        : submitStatus.type === "error"
+                        ? "bg-red-500/20 border-red-400/40 text-red-400" // Error state
+                        : !isFormValid
+                        ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Disabled state
+                        : "bg-purple-500/20 border-purple-400/40 text-white hover:bg-purple-500/30 hover:border-purple-400/60" // Active state
                     }`}
                   >
+                    {/* Conditional button content based on submission state */}
                     {isSubmitting ? (
+                      // Loading state with spinner and text
                       <div className="flex items-center justify-center gap-2">
                         <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                         Sending...
                       </div>
+                    ) : submitStatus.type === "success" ? (
+                      // Success state with checkmark and text
+                      <div className="flex items-center justify-center gap-2">
+                        <svg
+                          className="w-4 h-4 text-green-400"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path d="M20 6L9 17l-5-5" />
+                        </svg>
+                        Message Sent! Check your Mailbox
+                      </div>
+                    ) : submitStatus.type === "error" ? (
+                      // Error state with X icon and text
+                      <div className="flex items-center justify-center gap-2">
+                        <svg
+                          className="w-4 h-4 text-red-400"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                        Enter Valid Email & Retry
+                      </div>
                     ) : (
+                      // Default submit text
                       "Send Message"
                     )}
                   </button>
@@ -614,20 +715,21 @@ export default function ContactPage() {
               </form>
             </div>
 
-            {/* Contact Info Strip - Mobile: 6x1 (top), Desktop: 2x4 (right top) */}
+            {/* Contact Information Section */}
+            {/* Responsive positioning: Mobile: 6x1 (top row), Tablet: 6x1 (top row), Desktop: 2x3 (right side) */}
             <div className="col-span-6 row-span-1 col-start-1 row-start-1 sm:col-span-6 sm:row-span-1 sm:col-start-1 sm:row-start-1 md:col-span-2 md:row-span-3 md:col-start-7 md:row-start-1 lg:row-span-4 lg:col-span-2 lg:row-start-1 rounded-2xl md:rounded-3xl border-2 p-2 md:p-3 flex md:flex-col lg:grid lg:grid-cols-2 lg:grid-rows-3 items-center md:justify-center gap-2 md:gap-3 z-10 group hover:border-transparent transition-all duration-300 backdrop-blur-sm bg-[#0F0F0F]/80 border-purple-500/20">
-              {/* GitHub */}
+              {/* GitHub Profile Button */}
               <button
                 onClick={() =>
                   handleCopy(
-                    userData?.socialLinks?.githubProfile || "jatinbuilds",
-                    "github"
+                    userData?.socialLinks?.githubProfile || "jatinbuilds", // Get GitHub profile from context or use default
+                    "github" // Identifier for copy feedback
                   )
                 }
                 className={`w-full h-full flex items-center justify-between gap-2 px-2 sm:px-3 md:px-4 py-2 sm:py-3 md:py-4 lg:col-span-1 lg:row-span-1  rounded-xl transition-all duration-300 group/icon relative overflow-hidden ${
                   copiedItem === "github"
-                    ? "bg-green-500/20 border border-green-400/40"
-                    : "bg-purple-500/10 hover:bg-purple-500/20"
+                    ? "bg-green-500/20 border border-green-400/40" // Green when copied
+                    : "bg-purple-500/10 hover:bg-purple-500/20" // Purple when not copied
                 }`}
               >
                 <div className="flex flex-col items-center justify-center flex-1 w-full">
@@ -1005,25 +1107,28 @@ export default function ContactPage() {
           </div>
         </main>
 
-        {/* Message Modal */}
+        {/* Message Modal for Mobile Devices */}
+        {/* This modal appears when user clicks "Write Message" on mobile */}
         {isMessageModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Blurred Background */}
+            {/* Blurred Background Overlay */}
             <div
               className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-              onClick={closeMessageModal}
+              onClick={closeMessageModal} // Close modal when background is clicked
             />
 
-            {/* Modal Content */}
+            {/* Modal Content Container */}
             <div className="relative w-full max-w-2xl bg-[#0F0F0F]/95 border border-purple-500/20 rounded-2xl p-6">
+              {/* Modal Header with Title and Close Button */}
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">
                   Write Message
                 </h3>
                 <button
-                  onClick={closeMessageModal}
+                  onClick={closeMessageModal} // Close modal when X is clicked
                   className="w-8 h-8 rounded-full bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-white hover:bg-purple-500/30 transition-colors"
                 >
+                  {/* Close (X) Icon */}
                   <svg
                     className="w-4 h-4"
                     viewBox="0 0 24 24"
@@ -1036,16 +1141,18 @@ export default function ContactPage() {
                 </button>
               </div>
 
+              {/* Message Input Textarea */}
               <textarea
-                value={tempMessage}
-                onChange={handleMessageChange}
-                placeholder="Share your ideas..."
-                className="w-full h-64 px-4 py-3 rounded-xl bg-black/50 border border-purple-500/20 text-white text-sm focus:outline-none focus:border-purple-500/50 transition-colors resize-none autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)]"
+                value={tempMessage} // Controlled by temporary message state
+                onChange={handleMessageChange} // Handle text changes
+                placeholder="Share your ideas..." // Placeholder text
+                className={`w-full h-64 px-4 py-3 rounded-xl bg-black/50 border text-white text-sm focus:outline-none transition-colors resize-none autofill:bg-black/50 autofill:text-white [&:-webkit-autofill]:bg-black/50 [&:-webkit-autofill]:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_rgba(0,0,0,0.5)] ${getInputBorderStyle()}`}
               />
 
+              {/* Modal Footer with Done Button */}
               <div className="flex justify-end mt-4">
                 <button
-                  onClick={closeMessageModal}
+                  onClick={closeMessageModal} // Close modal and save message
                   className="px-6 py-2 bg-purple-500/20 border border-purple-400/40 text-white rounded-xl hover:bg-purple-500/30 transition-colors"
                 >
                   Done
@@ -1058,3 +1165,50 @@ export default function ContactPage() {
     </>
   )
 }
+
+/*
+ * COMPONENT SUMMARY:
+ *
+ * This ContactPage component is a comprehensive contact form with the following features:
+ *
+ * 1. RESPONSIVE DESIGN:
+ *    - Mobile: 6x5 grid layout with compact form
+ *    - Tablet: 8x5 grid layout with expanded form
+ *    - Desktop: 8x6 grid layout with full form and social links
+ *
+ * 2. FORM FUNCTIONALITY:
+ *    - Controlled form inputs (name, email, message)
+ *    - Real-time validation with visual indicators
+ *    - Form submission with loading states
+ *    - Success/error message display
+ *    - Mobile modal for message input
+ *
+ * 3. SOCIAL MEDIA INTEGRATION:
+ *    - GitHub, LinkedIn, Twitter, Email, Phone buttons
+ *    - One-click copy to clipboard functionality
+ *    - Visual feedback when items are copied
+ *    - Dynamic content from user context
+ *
+ * 4. NAVIGATION:
+ *    - Profile button (navigates to /intro)
+ *    - Projects button (navigates to /projects with GitHub repos)
+ *    - Loading states during navigation
+ *
+ * 5. UI/UX FEATURES:
+ *    - Animated background with PixelBlast component
+ *    - Dark theme with purple accents
+ *    - Smooth transitions and hover effects
+ *    - Accessibility features (labels, ARIA attributes)
+ *    - Autofill styling for dark theme
+ *
+ * 6. STATE MANAGEMENT:
+ *    - Form data state
+ *    - UI state (loading, submission status)
+ *    - Modal state for mobile message input
+ *    - Copy feedback state
+ *    - Navigation loading states
+ *
+ * The component uses React hooks for state management, Next.js for routing,
+ * and Tailwind CSS for styling with a focus on responsive design and
+ * user experience.
+ */

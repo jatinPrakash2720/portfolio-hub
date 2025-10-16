@@ -6,39 +6,23 @@ export async function GET(
   { params }: { params: Promise<{ username: string }> }
 ) {
   try {
-    console.log("Users API route called")
     const { username } = await params
-    console.log("Username extracted:", username)
 
     if (!username) {
-      console.log("No username provided")
       return NextResponse.json(
         { error: "Username is required" },
         { status: 400 }
       )
     }
 
-    console.log("Fetching user data from Firebase for:", username)
     const userData = await getUser(username)
-    console.log("User data received:", userData ? "Data found" : "No data")
 
     if (!userData) {
-      console.log("No user found for username:", username)
       return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
 
-    console.log("Returning user data successfully")
     return NextResponse.json(userData)
   } catch (error) {
-    console.error("Error in user API route:", error)
-    console.error(
-      "Error details:",
-      error instanceof Error ? error.message : String(error)
-    )
-    console.error(
-      "Error stack:",
-      error instanceof Error ? error.stack : "No stack trace"
-    )
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

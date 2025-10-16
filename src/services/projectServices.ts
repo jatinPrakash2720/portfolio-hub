@@ -15,9 +15,6 @@ export async function getAllProject(
   try {
     const { db } = await connectionToFirebase()
     if (!db) {
-      console.error(
-        "Erroring while fetching db from connectionToFirebase from geAllProject()"
-      )
       return null
     }
 
@@ -27,7 +24,6 @@ export async function getAllProject(
     const querySnapShot = await getDocs(q)
 
     if (querySnapShot.empty) {
-      console.log("No Such Document! from getAllProjects()")
       return null
     }
     return querySnapShot.docs.map(
@@ -38,7 +34,6 @@ export async function getAllProject(
         } as Project)
     )
   } catch (error) {
-    console.error("Error: Internal Error from getAllProject():", error)
     return null
   }
 }
@@ -49,9 +44,6 @@ export async function getAllProjectsSelective(
   try {
     const { db } = await connectionToFirebase()
     if (!db) {
-      console.error(
-        "Erroring while fetching db from connectionToFirebase from getAllProjectsSelective()"
-      )
       return null
     }
 
@@ -63,7 +55,6 @@ export async function getAllProjectsSelective(
     const querySnapShot = await getDocs(q)
 
     if (querySnapShot.empty) {
-      console.log("No Such Document! from getAllProjectsSelective()")
       return null
     }
 
@@ -86,10 +77,6 @@ export async function getAllProjectsSelective(
 
     return validatedData
   } catch (error) {
-    console.error(
-      "Error: Internal Error from getAllProjectsSelective():",
-      error
-    )
     return null
   }
 }
@@ -101,9 +88,6 @@ export async function getProjectById(
   try {
     const { db } = await connectionToFirebase()
     if (!db) {
-      console.error(
-        "Erroring while fetching db from connectionToFirebase from geProjectById()"
-      )
       return null
     }
 
@@ -111,17 +95,14 @@ export async function getProjectById(
 
     const projectSnap = await getDoc(projectRef)
     if (!projectSnap.exists()) {
-      console.log("No such project found!")
       return null
     }
     if (projectSnap.data()?.userId !== username) {
-      console.error("You can not access this project.")
       return null
     }
 
     return projectSnap.data() as Project
   } catch (error) {
-    console.error("Error: Internal Error from getAllProject():", error)
     return null
   }
 }

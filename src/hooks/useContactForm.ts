@@ -83,7 +83,6 @@ export function useContactForm() {
         return false
       }
     } catch (error) {
-      console.error("Error submitting form:", error)
       setSubmitStatus({
         type: "error",
         message: "Network error. Please check your connection and try again.",

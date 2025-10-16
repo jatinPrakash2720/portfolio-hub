@@ -25,7 +25,7 @@ function getFirebaseConfig(): FirebaseOptions {
       const config = JSON.parse(process.env.FIREBASE_CONFIG)
       if (config && config.apiKey) return config
     } catch {
-      console.warn("Warning: Failed to parse NEXT_PUBLIC_FIREBASE_CONFIG.")
+      // Failed to parse config
     }
   }
 
@@ -50,13 +50,11 @@ function getFirebaseConfig(): FirebaseOptions {
 export async function connectionToFirebase(): Promise<FirebaseServices> {
   // Return cached connection if available
   if (cached.db && cached.auth && cached.storage) {
-    console.log("Using cached firebase services")
     return cached
   }
 
   // Return existing connection promise if one is in progress
   if (connectionPromise) {
-    console.log("Firebase connection already in progress, waiting...")
     return connectionPromise
   }
 
@@ -76,10 +74,8 @@ export async function connectionToFirebase(): Promise<FirebaseServices> {
       cached.auth = auth
       cached.storage = storage
 
-      console.log("Firebase connected and services initialized!")
       return cached
     } catch (error) {
-      console.error("Failed to connect Firebase: ", error)
       connectionPromise = null // Reset promise on error
       throw error
     }

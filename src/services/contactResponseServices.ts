@@ -4,10 +4,19 @@ import {
   validateContactForm,
 } from "../models/ContactResponse"
 import { ApiResponse } from "../types/ApiResponse"
-
-// In-memory storage for demo purposes
-// In production, replace this with actual database operations
-const contactResponses: ContactResponse[] = []
+import { connectionToFirebase } from "@/lib/dbConnect"
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  doc,
+  getDoc,
+  deleteDoc,
+  Timestamp,
+} from "firebase/firestore"
 
 export async function saveContactResponse(
   contactData: Omit<ContactResponse, "id" | "createdAt" | "updatedAt">
@@ -20,23 +29,32 @@ export async function saveContactResponse(
       updatedAt: true,
     }).parse(contactData)
 
-    // Create new contact response with ID and timestamps
-    const newContactResponse: ContactResponse = {
+    // Prepare data for Firestore
+    const firestoreData = {
       ...validatedData,
-      id: `contact_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
     }
 
-    // Save to storage (replace with database operation)
-    contactResponses.push(newContactResponse)
+    // Save to Firestore
+    const { db } = await connectionToFirebase()
+    if (!db) {
+      return {
+        success: false,
+        message: "Failed to connect to Firebase",
+      }
+    }
+    const docRef = await addDoc(
+      collection(db, "contactresponses"),
+      firestoreData
+    )
 
     return {
       success: true,
       message: "Contact response saved successfully",
-    }
+      data: { id: docRef.id },
+    } as ApiResponse
   } catch (error) {
-    console.error("Error saving contact response:", error)
     return {
       success: false,
       message: "Failed to save contact response",
@@ -44,106 +62,149 @@ export async function saveContactResponse(
   }
 }
 
-export async function getContactResponsesByUserId(userId: string): Promise<{
-  success: boolean
-  data?: ContactResponse[]
-  message: string
-}> {
-  try {
-    const userResponses = contactResponses.filter(
-      (response) => response.userId === userId
-    )
+// export async function getContactResponsesByUserId(userId: string): Promise<{
+//   success: boolean
+//   data?: ContactResponse[]
+//   message: string
+//  }> {
+//   try {
+//     const q = query(
+//       collection(db, "contactresponses"),
+//       where("userId", "==", userId),
+//       orderBy("createdAt", "desc")
+//     )
 
-    return {
-      success: true,
-      data: userResponses,
-      message: `Found ${userResponses.length} contact responses for user ${userId}`,
-    }
-  } catch (error) {
-    console.error("Error fetching contact responses:", error)
-    return {
-      success: false,
-      message: "Failed to fetch contact responses",
-    }
-  }
-}
+//     const querySnapshot = await getDocs(q)
+//     const userResponses: ContactResponse[] = []
 
-export async function getAllContactResponses(): Promise<{
-  success: boolean
-  data?: ContactResponse[]
-  message: string
-}> {
-  try {
-    return {
-      success: true,
-      data: contactResponses,
-      message: `Found ${contactResponses.length} total contact responses`,
-    }
-  } catch (error) {
-    console.error("Error fetching all contact responses:", error)
-    return {
-      success: false,
-      message: "Failed to fetch contact responses",
-    }
-  }
-}
+//     querySnapshot.forEach((doc) => {
+//       const data = doc.data()
+//       userResponses.push({
+//         id: doc.id,
+//         name: data.name,
+//         email: data.email,
+//         message: data.message,
+//         dateOfResponse: data.dateOfResponse,
+//         timeOfResponse: data.timeOfResponse,
+//         userId: data.userId,
+//         createdAt: data.createdAt?.toDate(),
+//         updatedAt: data.updatedAt?.toDate(),
+//       })
+//     })
 
-export async function getContactResponseById(id: string): Promise<{
-  success: boolean
-  data?: ContactResponse
-  message: string
-}> {
-  try {
-    const contactResponse = contactResponses.find(
-      (response) => response.id === id
-    )
+//     return {
+//       success: true,
+//       data: userResponses,
+//       message: `Found ${userResponses.length} contact responses for user ${userId}`,
+//     }
+//   } catch (error) {
+//     return {
+//       success: false,
+//       message: "Failed to fetch contact responses",
+//     }
+//   }
+// }
 
-    if (!contactResponse) {
-      return {
-        success: false,
-        message: "Contact response not found",
-      }
-    }
+// export async function getAllContactResponses(): Promise<{
+//   success: boolean
+//   data?: ContactResponse[]
+//   message: string
+// }> {
+//   try {
+//     const q = query(
+//       collection(db, "contactresponses"),
+//       orderBy("createdAt", "desc")
+//     )
 
-    return {
-      success: true,
-      data: contactResponse,
-      message: "Contact response found",
-    }
-  } catch (error) {
-    console.error("Error fetching contact response by ID:", error)
-    return {
-      success: false,
-      message: "Failed to fetch contact response",
-    }
-  }
-}
+//     const querySnapshot = await getDocs(q)
+//     const allResponses: ContactResponse[] = []
 
-export async function deleteContactResponse(id: string): Promise<ApiResponse> {
-  try {
-    const index = contactResponses.findIndex((response) => response.id === id)
+//     querySnapshot.forEach((doc) => {
+//       const data = doc.data()
+//       allResponses.push({
+//         id: doc.id,
+//         name: data.name,
+//         email: data.email,
+//         message: data.message,
+//         dateOfResponse: data.dateOfResponse,
+//         timeOfResponse: data.timeOfResponse,
+//         userId: data.userId,
+//         createdAt: data.createdAt?.toDate(),
+//         updatedAt: data.updatedAt?.toDate(),
+//       })
+//     })
 
-    if (index === -1) {
-      return {
-        success: false,
-        message: "Contact response not found",
-      }
-    }
+//     return {
+//       success: true,
+//       data: allResponses,
+//       message: `Found ${allResponses.length} total contact responses`,
+//     }
+//   } catch (error) {
+//     return {
+//       success: false,
+//       message: "Failed to fetch contact responses",
+//     }
+//   }
+// }
 
-    contactResponses.splice(index, 1)
+// export async function getContactResponseById(id: string): Promise<{
+//   success: boolean
+//   data?: ContactResponse
+//   message: string
+// }> {
+//   try {
+//     const docRef = doc(db, "contactresponses", id)
+//     const docSnap = await getDoc(docRef)
 
-    return {
-      success: true,
-      message: "Contact response deleted successfully",
-    }
-  } catch (error) {
-    console.error("Error deleting contact response:", error)
-    return {
-      success: false,
-      message: "Failed to delete contact response",
-    }
-  }
-}
+//     if (!docSnap.exists()) {
+//       return {
+//         success: false,
+//         message: "Contact response not found",
+//       }
+//     }
+
+//     const data = docSnap.data()
+//     const contactResponse: ContactResponse = {
+//       id: docSnap.id,
+//       name: data.name,
+//       email: data.email,
+//       message: data.message,
+//       dateOfResponse: data.dateOfResponse,
+//       timeOfResponse: data.timeOfResponse,
+//       userId: data.userId,
+//       createdAt: data.createdAt?.toDate(),
+//       updatedAt: data.updatedAt?.toDate(),
+//     }
+
+//     return {
+//       success: true,
+//       data: contactResponse,
+//       message: "Contact response found",
+//     }
+//   } catch (error) {
+//     return {
+//       success: false,
+//       message: "Failed to fetch contact response",
+//     }
+//   }
+// }
+
+// export async function deleteContactResponse(id: string): Promise<ApiResponse> {
+//   try {
+//     const docRef = doc(db, "contactresponses", id)
+//     await deleteDoc(docRef)
+
+//     return {
+//       success: true,
+//       message: "Contact response deleted successfully",
+//     }
+//   } catch (error) {
+//     return {
+//       success: false,
+//       message: "Failed to delete contact response",
+//     }
+//   }
+// }
 
 // Helper function to validate contact form data before processing
 export function validateContactFormData(data: unknown) {

@@ -1,6 +1,6 @@
 import { resend } from "@/lib/resend"
-import UserConfirmationEmail from "../emails/UserConfirmationEmail"
-import AdminNotificationEmail from "../emails/AdminNotificationEmail"
+import UserConfirmationEmail from "../../emails/UserConfirmationEmail"
+import AdminNotificationEmail from "../../emails/AdminNotificationEmail"
 import { ApiResponse } from "../types/ApiResponse"
 import { createContactResponse } from "../models/ContactResponse"
 import { saveContactResponse } from "../services/contactResponseServices"
@@ -11,20 +11,94 @@ export async function sendUserConfirmationEmail(
   message: string
 ): Promise<ApiResponse> {
   try {
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from: "Jatin Prakash's Portfolio <noreply@jatinbuilds.com>",
       to: email,
       subject: "Thank you for reaching out!",
       react: <UserConfirmationEmail name={name} message={message} />,
     })
 
-    return {
-      success: true,
-      message: "Confirmation email sent successfully!",
+    // Check if email was sent successfully and get the email ID
+    if (!result.data?.id) {
+      return {
+        success: false,
+        message: "Failed to send email - no email ID returned",
+      }
     }
-  } catch (emailError) {
-    console.error("Error sending user confirmation email", emailError)
-    return { success: false, message: "Failed to send confirmation email" }
+
+    // Wait a moment for the email to be processed
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+
+    // Check email status using resend.emails.get()
+    try {
+      const emailStatus = await resend.emails.get(result.data.id)
+
+      // Check if email bounced or failed
+      if (emailStatus.data?.last_event) {
+        const lastEvent = emailStatus.data.last_event
+
+        // Check for bounce, failed, or other error states
+        if (["bounced", "failed", "complained"].includes(lastEvent)) {
+          return {
+            success: false,
+            message: `Email ${lastEvent}. Please check your email address.`,
+            data: {
+              emailId: result.data.id,
+              lastEvent: lastEvent,
+              emailStatus: emailStatus.data,
+            },
+          }
+        }
+
+        // Email was delivered successfully
+        if (["delivered", "sent", "opened", "clicked"].includes(lastEvent)) {
+          return {
+            success: true,
+            message: "Confirmation email sent successfully!",
+            data: {
+              emailId: result.data.id,
+              lastEvent: lastEvent,
+              emailStatus: emailStatus.data,
+            },
+          }
+        }
+
+        // Email is still being processed (queued, scheduled, etc.)
+        if (["queued", "scheduled", "delivery_delayed"].includes(lastEvent)) {
+          return {
+            success: true,
+            message: "Confirmation email queued for delivery!",
+            data: {
+              emailId: result.data.id,
+              lastEvent: lastEvent,
+              emailStatus: emailStatus.data,
+            },
+          }
+        }
+      }
+
+      // If we can't determine the status, assume success since send didn't throw
+      return {
+        success: true,
+        message: "Confirmation email sent successfully!",
+        data: {
+          emailId: result.data.id,
+          emailStatus: emailStatus.data,
+        },
+      }
+    } catch (statusError) {
+      // If status check fails, assume success since send didn't throw
+      return {
+        success: true,
+        message: "Confirmation email sent successfully!",
+        data: { emailId: result.data.id },
+      }
+    }
+  } catch (emailError: any) {
+    return {
+      success: false,
+      message: "Enter valid email",
+    }
   }
 }
 
@@ -37,7 +111,7 @@ export async function sendAdminNotificationEmail(
   try {
     const timestamp = new Date().toLocaleString()
 
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from: "Jatin Prakash's Portfolio <noreply@jatinbuilds.com>",
       to: adminEmail,
       subject: `New contact form submission from ${name}`,
@@ -51,12 +125,84 @@ export async function sendAdminNotificationEmail(
       ),
     })
 
-    return {
-      success: true,
-      message: "Admin notification email sent successfully!",
+    // Check if email was sent successfully and get the email ID
+    if (!result.data?.id) {
+      return {
+        success: false,
+        message:
+          "Failed to send admin notification email - no email ID returned",
+      }
     }
-  } catch (emailError) {
-    console.error("Error sending admin notification email", emailError)
+
+    // Wait a moment for the email to be processed
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+
+    // Check email status using resend.emails.get()
+    try {
+      const emailStatus = await resend.emails.get(result.data.id)
+
+      // Check if email bounced or failed
+      if (emailStatus.data?.last_event) {
+        const lastEvent = emailStatus.data.last_event
+
+        // Check for bounce, failed, or other error states
+        if (["bounced", "failed", "complained"].includes(lastEvent)) {
+          return {
+            success: false,
+            message: `Admin notification email ${lastEvent}. Please check admin email address.`,
+            data: {
+              emailId: result.data.id,
+              lastEvent: lastEvent,
+              emailStatus: emailStatus.data,
+            },
+          }
+        }
+
+        // Email was delivered successfully
+        if (["delivered", "sent", "opened", "clicked"].includes(lastEvent)) {
+          return {
+            success: true,
+            message: "Admin notification email sent successfully!",
+            data: {
+              emailId: result.data.id,
+              lastEvent: lastEvent,
+              emailStatus: emailStatus.data,
+            },
+          }
+        }
+
+        // Email is still being processed (queued, scheduled, etc.)
+        if (["queued", "scheduled", "delivery_delayed"].includes(lastEvent)) {
+          return {
+            success: true,
+            message: "Admin notification email queued for delivery!",
+            data: {
+              emailId: result.data.id,
+              lastEvent: lastEvent,
+              emailStatus: emailStatus.data,
+            },
+          }
+        }
+      }
+
+      // If we can't determine the status, assume success since send didn't throw
+      return {
+        success: true,
+        message: "Admin notification email sent successfully!",
+        data: {
+          emailId: result.data.id,
+          emailStatus: emailStatus.data,
+        },
+      }
+    } catch (statusError) {
+      // If status check fails, assume success since send didn't throw
+      return {
+        success: true,
+        message: "Admin notification email sent successfully!",
+        data: { emailId: result.data.id },
+      }
+    }
+  } catch (emailError: any) {
     return {
       success: false,
       message: "Failed to send admin notification email",
@@ -104,7 +250,6 @@ export async function handleContactFormSubmission(
     // Save contact response to database
     const saveResult = await saveContactResponse(contactResponse)
     if (!saveResult.success) {
-      console.error("Failed to save contact response:", saveResult.message)
       // Continue execution even if saving fails - emails were sent successfully
     }
 
@@ -113,7 +258,6 @@ export async function handleContactFormSubmission(
       message: "Contact form submitted successfully! Emails sent.",
     }
   } catch (error) {
-    console.error("Error handling contact form submission", error)
     return {
       success: false,
       message: "Failed to process contact form submission",

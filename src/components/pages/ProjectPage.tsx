@@ -208,7 +208,7 @@ export default function ProjectsPage({ githubRepos }: ProjectsPageProps) {
     setIsNavigatingToIntro(true)
     setIntroLoading(true)
 
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    // await new Promise((resolve) => setTimeout(resolve, 100))
     router.push("/intro")
   }
 
@@ -216,7 +216,7 @@ export default function ProjectsPage({ githubRepos }: ProjectsPageProps) {
     setIsNavigatingToContact(true)
     setContactLoading(true)
 
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    // await new Promise((resolve) => setTimeout(resolve, 100))
     router.push("/contact")
   }
 
