@@ -86,7 +86,7 @@ export async function sendUserConfirmationEmail(
           emailStatus: emailStatus.data,
         },
       }
-    } catch (statusError) {
+    } catch {
       // If status check fails, assume success since send didn't throw
       return {
         success: true,
@@ -94,7 +94,7 @@ export async function sendUserConfirmationEmail(
         data: { emailId: result.data.id },
       }
     }
-  } catch (emailError: any) {
+  } catch {
     return {
       success: false,
       message: "Enter valid email",
@@ -194,7 +194,7 @@ export async function sendAdminNotificationEmail(
           emailStatus: emailStatus.data,
         },
       }
-    } catch (statusError) {
+    } catch {
       // If status check fails, assume success since send didn't throw
       return {
         success: true,
@@ -202,7 +202,7 @@ export async function sendAdminNotificationEmail(
         data: { emailId: result.data.id },
       }
     }
-  } catch (emailError: any) {
+  } catch {
     return {
       success: false,
       message: "Failed to send admin notification email",
@@ -257,7 +257,7 @@ export async function handleContactFormSubmission(
       success: true,
       message: "Contact form submitted successfully! Emails sent.",
     }
-  } catch (error) {
+  } catch {
     return {
       success: false,
       message: "Failed to process contact form submission",

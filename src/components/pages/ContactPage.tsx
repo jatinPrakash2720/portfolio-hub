@@ -462,12 +462,12 @@ export default function ContactPage() {
                         isSubmitting
                           ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Loading state
                           : submitStatus.type === "success"
-                          ? "bg-green-500/20 border-green-400/40 text-green-400" // Success state
-                          : submitStatus.type === "error"
-                          ? "bg-red-500/20 border-red-400/40 text-red-400" // Error state
-                          : !isFormValid
-                          ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Disabled state
-                          : "bg-purple-500/20 border-purple-400/40 text-white hover:bg-purple-500/30 hover:border-purple-400/60" // Active state
+                            ? "bg-green-500/20 border-green-400/40 text-green-400" // Success state
+                            : submitStatus.type === "error"
+                              ? "bg-red-500/20 border-red-400/40 text-red-400" // Error state
+                              : !isFormValid
+                                ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Disabled state
+                                : "bg-purple-500/20 border-purple-400/40 text-white hover:bg-purple-500/30 hover:border-purple-400/60" // Active state
                       }`}
                     >
                       {/* Conditional button content based on form state */}
@@ -568,9 +568,9 @@ export default function ContactPage() {
                     >
                       {/* Dynamic button text based on message state */}
                       {formData.message.trim().length > 0
-                        ? "Edit Message" // Show "Edit" if message exists
+                        ? "Edit Message" // Show &quot;Edit&quot; if message exists
                         : "Write Message"}{" "}
-                      // Show "Write" if message is empty
+                      {/* Show "Write" if message is empty */}
                     </button>
                   </div>
                 </div>
@@ -663,12 +663,12 @@ export default function ContactPage() {
                       isSubmitting
                         ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Loading state
                         : submitStatus.type === "success"
-                        ? "bg-green-500/20 border-green-400/40 text-green-400" // Success state
-                        : submitStatus.type === "error"
-                        ? "bg-red-500/20 border-red-400/40 text-red-400" // Error state
-                        : !isFormValid
-                        ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Disabled state
-                        : "bg-purple-500/20 border-purple-400/40 text-white hover:bg-purple-500/30 hover:border-purple-400/60" // Active state
+                          ? "bg-green-500/20 border-green-400/40 text-green-400" // Success state
+                          : submitStatus.type === "error"
+                            ? "bg-red-500/20 border-red-400/40 text-red-400" // Error state
+                            : !isFormValid
+                              ? "bg-gray-500/20 border-gray-400/40 text-white cursor-not-allowed" // Disabled state
+                              : "bg-purple-500/20 border-purple-400/40 text-white hover:bg-purple-500/30 hover:border-purple-400/60" // Active state
                     }`}
                   >
                     {/* Conditional button content based on submission state */}

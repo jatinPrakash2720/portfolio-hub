@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       } as ApiResponse,
       { status: 200 }
     )
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         success: false,

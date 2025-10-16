@@ -5,18 +5,7 @@ import {
 } from "../models/ContactResponse"
 import { ApiResponse } from "../types/ApiResponse"
 import { connectionToFirebase } from "@/lib/dbConnect"
-import {
-  collection,
-  addDoc,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  doc,
-  getDoc,
-  deleteDoc,
-  Timestamp,
-} from "firebase/firestore"
+import { collection, addDoc, Timestamp } from "firebase/firestore"
 
 export async function saveContactResponse(
   contactData: Omit<ContactResponse, "id" | "createdAt" | "updatedAt">
@@ -54,7 +43,7 @@ export async function saveContactResponse(
       message: "Contact response saved successfully",
       data: { id: docRef.id },
     } as ApiResponse
-  } catch (error) {
+  } catch {
     return {
       success: false,
       message: "Failed to save contact response",

@@ -17,7 +17,7 @@ export async function getUser(username: string): Promise<User | null> {
 
     const userData = userSnap.data() as User
     return userData
-  } catch (error) {
+  } catch {
     return null
   }
 }

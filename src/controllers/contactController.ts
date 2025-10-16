@@ -55,9 +55,7 @@ export async function handleContactFormSuccess(
       const results = await Promise.allSettled(backgroundTasks)
 
       // Check if any critical tasks failed
-      const failedTasks = results.filter(
-        (result) => result.status === "rejected"
-      )
+      results.filter((result) => result.status === "rejected")
     }
 
     return {
@@ -68,7 +66,7 @@ export async function handleContactFormSuccess(
         dataSavedToFirebase: !!userId,
       },
     }
-  } catch (error) {
+  } catch {
     return {
       success: false,
       message: "Background processing failed",

@@ -31,9 +31,9 @@ export async function getAllProject(
         ({
           id: doc.id,
           ...doc.data(),
-        } as Project)
+        }) as Project
     )
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -76,7 +76,7 @@ export async function getAllProjectsSelective(
     const validatedData = AllProjectSchema.parse({ projects })
 
     return validatedData
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -102,7 +102,7 @@ export async function getProjectById(
     }
 
     return projectSnap.data() as Project
-  } catch (error) {
+  } catch {
     return null
   }
 }

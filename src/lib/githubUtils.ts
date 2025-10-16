@@ -21,7 +21,7 @@ export function extractRepoName(url: string): string {
     // If no pattern matches, return the last part of the URL
     const parts = url.split("/").filter(Boolean)
     return parts[parts.length - 1] || "Unknown Repo"
-  } catch (error) {
+  } catch {
     return "Unknown Repo"
   }
 }
@@ -35,7 +35,7 @@ export function extractRepoOwner(url: string): string {
   try {
     const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/)
     return match ? match[1] : ""
-  } catch (error) {
+  } catch {
     return ""
   }
 }

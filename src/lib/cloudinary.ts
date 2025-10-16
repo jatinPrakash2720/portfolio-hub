@@ -67,7 +67,7 @@ const deleteFromCloudinary = async (imageUrl: string) => {
       resource_type: "image",
     })
     return response
-  } catch (error) {
+  } catch {
     return null
   }
 }

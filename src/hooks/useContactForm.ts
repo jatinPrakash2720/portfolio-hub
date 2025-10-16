@@ -82,7 +82,7 @@ export function useContactForm() {
         })
         return false
       }
-    } catch (error) {
+    } catch {
       setSubmitStatus({
         type: "error",
         message: "Network error. Please check your connection and try again.",
